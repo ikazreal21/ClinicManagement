@@ -46,9 +46,9 @@ admin.site.register(PatientMedicalHistory)
 admin.site.register(PatientRecord)
 
 
-admin.site.site_header = "Clinic Admin"
-admin.site.site_title = "Clinic Admin Portal"
-admin.site.index_title = "Welcome to Clinic Admin Portal"
+admin.site.site_header = "Asher MD Admin"
+admin.site.site_title = "Asher MD Admin Portal"
+admin.site.index_title = "Welcome to Asher MD Admin Portal"
 
 # @admin.register(Billing)
 # class BillingAdmin(admin.ModelAdmin):
