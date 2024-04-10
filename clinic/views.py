@@ -23,11 +23,12 @@ from django.db.models import Q
 from .models import *
 from .forms import *
 
-
+@login_required(login_url='login')
 def Home(request):
     patients = Patient.objects.all()
     return render(request, 'clinic/home.html', {'patients': patients})
 
+@login_required(login_url='login')
 def PatientDetails(request, pk):
     patient = Patient.objects.get(id=pk)
     medical_history = PatientMedicalHistory.objects.filter(patient=patient)
