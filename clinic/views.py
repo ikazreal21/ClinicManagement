@@ -36,6 +36,39 @@ def PatientDetails(request, pk):
     context = {'patient': patient, 'medical_history': medical_history, 'records': records}
     return render(request, 'clinic/patientdetails.html', context)
 
+@login_required(login_url='login')
+def AppointmentPage(request):
+    appointments = Appointment.objects.all()
+    context = {'appointments': appointments}
+    return render(request, 'clinic/appointments.html', context)
+
+@login_required(login_url='login')
+def ViewAppointment(request, pk):
+    appointment = Appointment.objects.get(id=pk)
+    if request.method == 'POST':
+        form = ResultsForm(request.POST, request.FILES)
+        print(form.errors)
+        if form.is_valid():
+            form.save(commit=False).patient = appointment
+            form.save()
+            return redirect('appointments')
+    context = {'appointment': appointment, 'profile': appointment.patient}
+    return render(request, 'clinic/viewappointment.html', context)
+
+@login_required(login_url='login')
+def ApproveAppointment(request, pk):
+    appointment = Appointment.objects.get(id=pk)
+    appointment.status = "Approved"
+    appointment.save()
+    return redirect('appointments')
+
+@login_required(login_url='login')
+def CompleteAppointment(request, pk):
+    appointment = Appointment.objects.get(id=pk)
+    appointment.status = "Completed"
+    appointment.save()
+    return redirect('appointments')
+
 def Login(request):
     if request.user.is_authenticated:
         return redirect('home')

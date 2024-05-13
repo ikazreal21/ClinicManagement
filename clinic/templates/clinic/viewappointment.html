@@ -1,0 +1,64 @@
+{% extends 'clinic/base.html' %} 
+
+{% block content %} 
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h3 class="card-title card-title-dash">{{profile.first_name}} {{profile.last_name}}</h3>
+          </div>
+          <div>
+            <a class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" href="{% url 'appointments' %}"><i class="mdi mdi-arrow-left"></i>Go Back
+            </a>
+          </div>
+        </div>
+        <div style="text-align: center;">
+            {% if profile.patientimage %}
+                <img class="img-lg" src="{{profile.patientimage.url}}" alt="profile" style="margin-bottom: 1rem;">
+            {% else %}
+                <img class="img-lg" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
+            {% endif %}
+            <h4>Date: {{appointment.date}}</h4>
+            <h4>Doctor: {{appointment.doctor | title}}</h4>
+            <h4>Reason: {{appointment.reason}}</h4>
+            <h4>Status: {{appointment.status | title}}</h4>
+            {% if appointment.results %}
+                <a href="{{appointment.results.report.url}}" class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" download target="_blank" ><i class="mdi mdi-download"></i>Download Report</a>
+            {% endif %}
+        </div>
+        <hr>
+        {% if appointment.status == 'Pending' %}
+            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}" ><i class="mdi mdi-bulletin-board">
+            </i>Approve
+            </a>
+        {% elif appointment.status == 'Approved' %}
+            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'completeappointment' appointment.id %}" ><i class="mdi mdi-check">
+            </i>Complete
+            </a>
+        {% endif %}
+        {% if appointment.status == 'Completed' %}
+        <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Upload Laboratory Results</h4>
+                    <form class="forms-sample" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                      <div class="form-group">
+                        <label for="exampleInputUsername1">File Upload</label>
+                        <input type="file" class="form-control" id="exampleInputUsername1" accept=".pdf,.jpeg,.png,.jpg" name="report" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary me-2">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+        </div>
+        {% endif %}
+        <hr>
+    </div>
+</div>
+
+
+{% endblock %}

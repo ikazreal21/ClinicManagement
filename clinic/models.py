@@ -58,6 +58,23 @@ class PatientRecord(models.Model):
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
 
-
+class Appointment(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
+    datetime = models.DateTimeField(null=True, blank=True)
+    doctor = models.CharField(max_length=255, null=True, blank=True)
+    reason = models.CharField(max_length=255, null=True, blank=True)
+    notes = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(max_length=255, null=True, blank=True)
+    report = models.FileField(upload_to='reports/', null=True, blank=True)
     
+    def __str__(self):
+        return self.patient.first_name + " " + self.patient.last_name + " - " + self.reason
+    
+    def date(self):
+        return self.datetime.strftime('%b %e %Y %I:%M %p')
+
+class Results(models.Model):
+    patient = models.OneToOneField(Appointment, on_delete=models.CASCADE, null=True, blank=True)
+    report = models.FileField(upload_to='reports/', null=True, blank=True)
+
     
