@@ -29,17 +29,26 @@ class Patient(models.Model):
     emergency_contact_relationship = models.CharField(max_length=255, null=True, blank=True)
     patientimage = models.ImageField(upload_to='patientimages/', null=True, blank=True)
 
+    class Meta:
+        verbose_name = 'Patient'
+        verbose_name_plural = 'Patients'
+
     def __str__(self):
         return self.first_name + " " + self.last_name
     
     def date(self):
         return self.date_of_birth.strftime('%b %e %Y')
     
+    
 class PatientMedicalHistory(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
     medical_condition = models.CharField(max_length=255, null=True, blank=True)
     medication = models.CharField(max_length=255, null=True, blank=True)
     allergies = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Patient Medical History'
+        verbose_name_plural = 'Patients Medical History'
 
     def __str__(self):
         return self.patient.first_name + " " + self.patient.last_name + " - " + self.medical_condition
@@ -51,6 +60,10 @@ class PatientRecord(models.Model):
     reason = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
     report = models.FileField(upload_to='reports/')
+
+    class Meta:
+        verbose_name = 'Patient Record'
+        verbose_name_plural = 'Patients Record'
     
     def __str__(self):
         return self.patient.first_name + " " + self.patient.last_name + " - " + self.reason
@@ -60,15 +73,25 @@ class PatientRecord(models.Model):
 
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
+    patient_name = models.CharField(max_length=255, null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
     doctor = models.CharField(max_length=255, null=True, blank=True)
     reason = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=255, null=True, blank=True)
     report = models.FileField(upload_to='reports/', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Appointment'
+        verbose_name_plural = 'Appointments'
+        ordering = ['-datetime']
     
     def __str__(self):
-        return self.patient.first_name + " " + self.patient.last_name + " - " + self.reason
+        if self.patient:
+            patient_name = self.patient.first_name + " " + self.patient.last_name
+        else:
+            patient_name = self.patient_name
+        return patient_name + " - " + self.reason
     
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
@@ -77,4 +100,9 @@ class Results(models.Model):
     patient = models.OneToOneField(Appointment, on_delete=models.CASCADE, null=True, blank=True)
     report = models.FileField(upload_to='reports/', null=True, blank=True)
 
-    
+    class Meta:
+        verbose_name = 'Result'
+        verbose_name_plural = 'Results'
+
+    def __str__(self):
+        return self.patient.patient.first_name + " " + self.patient.patient.last_name + " - " + self.patient.reason

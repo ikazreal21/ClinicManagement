@@ -21,6 +21,7 @@
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="{% static 'css/vertical-layout-light/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
   <!-- endinject -->
   <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" />
 </head>
@@ -75,8 +76,14 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'appointments' %}">
-              <i class="mdi mdi-calendar-check menu-icon"></i>
+              <i class="mdi mdi-book-multiple menu-icon"></i>
               <span class="menu-title">Appointments</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'calendar' %}">
+              <i class="mdi mdi-calendar-check menu-icon"></i>
+              <span class="menu-title">Calendar</span>
             </a>
           </li>
         </ul>

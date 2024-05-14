@@ -84,10 +84,10 @@ DATABASES = {
     }
 }
 
-import dj_database_url
+# import dj_database_url
 
-DATABASES['default'] = dj_database_url.parse("mysql://ikn3l51g99pssq4h:fhl5qkr8aaa4khmt@durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/wn53y8df1885rh5s", conn_max_age=600)
-DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+# DATABASES['default'] = dj_database_url.parse("mysql://ikn3l51g99pssq4h:fhl5qkr8aaa4khmt@durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/wn53y8df1885rh5s", conn_max_age=600)
+# DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
 
 
 # Password validation
@@ -147,3 +147,14 @@ CLOUDINARY_STORAGE = {
     "API_KEY": "964986345641993",
     "API_SECRET": "sDSJ1IXtdVjMrMAkGxABuvS2wmo",
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'dict2.1.teamone@gmail.com'
+EMAIL_HOST_PASSWORD = 'artndyuvmmgofmmo'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+DEFAULT_FROM_EMAIL = 'noreply<no_reply@domain.com>'

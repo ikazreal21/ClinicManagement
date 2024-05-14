@@ -7,6 +7,9 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Appointments</h4>
+            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'addappointment' %}"><i class="mdi mdi-briefcase-check">
+            </i>Add Appointment
+            </a>
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead>
@@ -20,7 +23,11 @@
                 <tbody>
                   {% for i in appointments %}
                   <tr>
-                    <td>{{i.patient.first_name | title }} {{i.patient.last_name | title }}</td>
+                    {% if i.patient %}
+                      <td>{{i.patient.first_name | title }} {{i.patient.last_name | title }}</td>
+                    {% else %}
+                      <td>No Account - {{i.patient_name | title }}</td>
+                    {% endif %}
                     <td>{{i.date}}</td>
                     <td>
                       {% if i.status == 'Pending' %}
