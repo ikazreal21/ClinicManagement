@@ -84,10 +84,10 @@ DATABASES = {
     }
 }
 
-# import dj_database_url
+import dj_database_url
 
-# DATABASES['default'] = dj_database_url.parse("mysql://ikn3l51g99pssq4h:fhl5qkr8aaa4khmt@durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/wn53y8df1885rh5s", conn_max_age=600)
-# DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+DATABASES['default'] = dj_database_url.parse("mysql://ikn3l51g99pssq4h:fhl5qkr8aaa4khmt@durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/wn53y8df1885rh5s", conn_max_age=600)
+DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
 
 
 # Password validation
