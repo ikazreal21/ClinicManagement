@@ -78,7 +78,7 @@ class Appointment(models.Model):
     doctor = models.CharField(max_length=255, null=True, blank=True)
     reason = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
-    status = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(max_length=255, default="Pending", null=True, blank=True)
     report = models.FileField(upload_to='reports/', null=True, blank=True)
 
     class Meta:
