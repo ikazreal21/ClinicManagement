@@ -73,10 +73,15 @@ def AddAppointment(request):
         form = AppointmentForm(request.POST)
         time = request.POST.get('time')
         date = request.POST.get('date')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
         datetime_str = f"{date} {time}"
+        patient_name = f"{first_name} {last_name}"
+        print(form.errors)
         if form.is_valid():
             form.save(commit=False).datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M')
             form.save(commit=False).status = "Pending"
+            form.save(commit=False).patient_name = patient_name
             form.save()
             return redirect('appointments')
     context = {'form': AppointmentForm()}

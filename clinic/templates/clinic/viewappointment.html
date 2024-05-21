@@ -24,8 +24,9 @@
                 <img class="img-lg" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
             {% endif %}
             <h4>Date: {{appointment.date}}</h4>
-            <h4>Doctor: {{appointment.doctor | title}}</h4>
-            <h4>Reason: {{appointment.reason}}</h4>
+            <h4>Lab Tech Staff: {{appointment.lab_tech_staff | title}}</h4>
+            <h4>Procedure: {{appointment.procedures}}</h4>
+            <h4>Staff: {{appointment.staff_name}}</h4>
             <h4>Status: {{appointment.status | title}}</h4>
             {% if appointment.results %}
                 <a href="{{appointment.results.report.url}}" class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" download target="_blank" ><i class="mdi mdi-download"></i>Download Report</a>

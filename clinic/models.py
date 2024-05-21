@@ -14,6 +14,12 @@ class CustomUser(AbstractUser):
     is_patient = models.BooleanField(default=False)
 
 class Patient(models.Model):
+    GENDER = (
+        ("M", "Male"),
+        ("F", "Female"),
+    )
+
+
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
@@ -24,6 +30,8 @@ class Patient(models.Model):
     state = models.CharField(max_length=255, null=True, blank=True)
     zip_code = models.CharField(max_length=255, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    age = models.IntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=GENDER, null=True, blank=True)
     emergency_contact_name = models.CharField(max_length=255, null=True, blank=True)
     emergency_contact_phone = models.CharField(max_length=255, null=True, blank=True)
     emergency_contact_relationship = models.CharField(max_length=255, null=True, blank=True)
@@ -56,8 +64,9 @@ class PatientMedicalHistory(models.Model):
 class PatientRecord(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
-    doctor = models.CharField(max_length=255, null=True, blank=True)
-    reason = models.CharField(max_length=255, null=True, blank=True)
+    lab_tech_staff = models.CharField(max_length=255, null=True, blank=True)
+    staff_name = models.CharField(max_length=255, null=True, blank=True)
+    procedures = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
     report = models.FileField(upload_to='reports/')
 
@@ -66,7 +75,7 @@ class PatientRecord(models.Model):
         verbose_name_plural = 'Patients Record'
     
     def __str__(self):
-        return self.patient.first_name + " " + self.patient.last_name + " - " + self.reason
+        return self.patient.first_name + " " + self.patient.last_name + " - " + self.procedures
     
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
@@ -74,9 +83,14 @@ class PatientRecord(models.Model):
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
     patient_name = models.CharField(max_length=255, null=True, blank=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
-    doctor = models.CharField(max_length=255, null=True, blank=True)
-    reason = models.CharField(max_length=255, null=True, blank=True)
+    lab_tech_staff = models.CharField(max_length=255, null=True, blank=True)
+    staff_name = models.CharField(max_length=255, null=True, blank=True)
+    procedures = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=255, default="Pending", null=True, blank=True)
     report = models.FileField(upload_to='reports/', null=True, blank=True)
@@ -91,7 +105,7 @@ class Appointment(models.Model):
             patient_name = self.patient.first_name + " " + self.patient.last_name
         else:
             patient_name = self.patient_name
-        return patient_name + " - " + self.reason
+        return patient_name + " - " + self.procedures
     
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
@@ -105,4 +119,4 @@ class Results(models.Model):
         verbose_name_plural = 'Results'
 
     def __str__(self):
-        return self.patient.patient.first_name + " " + self.patient.patient.last_name + " - " + self.patient.reason
+        return self.patient.patient.first_name + " " + self.patient.patient.last_name + " - " + self.patient.procedures
