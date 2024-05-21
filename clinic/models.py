@@ -119,4 +119,8 @@ class Results(models.Model):
         verbose_name_plural = 'Results'
 
     def __str__(self):
-        return self.patient.patient.first_name + " " + self.patient.patient.last_name + " - " + self.patient.procedures
+        if self.patient.patient:
+            patient_name = self.patient.patient.first_name + " " + self.patient.patient.last_name
+        else:
+            patient_name = self.patient.patient_name
+        return patient_name + " - " + self.patient.procedures
