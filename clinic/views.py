@@ -48,9 +48,11 @@ def AppointmentPage(request):
 def ViewAppointment(request, pk):
     appointment = Appointment.objects.get(id=pk)
     if appointment.patient:
+        appointment_email = appointment.patient.email
         appointment_name = f"{appointment.patient.last_name}, {appointment.patient.first_name}"
         subject_name = f"Booking Confirmation - {appointment.patient.last_name}, {appointment.patient.first_name}"
     else:
+        appointment_email = appointment.email
         appointment_name = f"{appointment.patient_name}"
         subject_name = f"Booking Confirmation - {appointment.patient_name}"
     if request.method == 'POST':
@@ -63,7 +65,7 @@ def ViewAppointment(request, pk):
             subject = subject_name
             message = f'Hi {appointment_name},\n\nYour appointment has been confirmed. Please find the details below:\n\nDate: {appointment.datetime.strftime("%b %e %Y")}\nTime: {appointment.datetime.strftime("%I:%M %p")}\nDoctor: {appointment.lab_tech_staff}\n\nRegards,\nAsher Medical Clinic'
             
-            recepients = [appointment.patient.email, ]
+            recepients = [appointment_email, ]
                         
             send_email(subject, message, recepients)
             return redirect('appointments')
