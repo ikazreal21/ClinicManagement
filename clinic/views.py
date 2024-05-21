@@ -47,6 +47,12 @@ def AppointmentPage(request):
 @login_required(login_url='login')
 def ViewAppointment(request, pk):
     appointment = Appointment.objects.get(id=pk)
+    if appointment.patient:
+        appointment_name = f"{appointment.patient.last_name}, {appointment.patient.first_name}"
+        subject_name = f"Booking Confirmation - {appointment.patient.last_name}, {appointment.patient.first_name}"
+    else:
+        appointment_name = f"{appointment.patient_name}"
+        subject_name = f"Booking Confirmation - {appointment.patient_name}"
     if request.method == 'POST':
         form = ResultsForm(request.POST, request.FILES)
         print(form.errors)
@@ -54,8 +60,8 @@ def ViewAppointment(request, pk):
             form.save(commit=False).patient = appointment
             form.save()
 
-            subject = f"Booking Confirmation - {appointment.patient.last_name}, {appointment.patient.first_name}"
-            message = f'Hi {appointment.patient.first_name},\n\nYour appointment has been confirmed. Please find the details below:\n\nDate: {appointment.datetime.strftime("%b %e %Y")}\nTime: {appointment.datetime.strftime("%I:%M %p")}\nDoctor: {appointment.doctor}\n\nRegards,\nAsher Medical Clinic'
+            subject = subject_name
+            message = f'Hi {appointment_name},\n\nYour appointment has been confirmed. Please find the details below:\n\nDate: {appointment.datetime.strftime("%b %e %Y")}\nTime: {appointment.datetime.strftime("%I:%M %p")}\nDoctor: {appointment.lab_tech_staff}\n\nRegards,\nAsher Medical Clinic'
             
             recepients = [appointment.patient.email, ]
                         
