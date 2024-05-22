@@ -71,7 +71,7 @@
                         <thead>
                           <tr>
                             <th>Date</th>
-                            <th>Lab Tech Staff</th>
+                            <th>Specialization</th>
                             <th>Procedure</th>
                             <th>Notes</th>
                             <th>Reports</th>
@@ -81,7 +81,7 @@
                         {% for i in records %}
                           <tr>
                             <td>{{i.date}}</td>
-                            <td>{{i.lab_tech_staff| title}}</td>
+                            <td>{{i.specialization| title}}</td>
                             <td>{{i.procedures}}</td>
                             <td>{{i.notes}}</td>
                             <td> 
@@ -107,7 +107,7 @@
                       <thead>
                         <tr>
                           <th>Date</th>
-                          <th>Lab Tech Staff</th>
+                          <th>Specialization</th>
                           <th>Procedure</th>
                           <th>Staff</th>
                           <th>Notes</th>
@@ -118,7 +118,7 @@
                       {% for i in appointment %}
                         <tr>
                           <td>{{i.date}}</td>
-                          <td>{{i.lab_tech_staff| title}}</td>
+                          <td>{{i.specialization| title}}</td>
                           <td>{{i.staff_name}}</td>
                           <td>{{i.procedures}}</td>
                           <td>{{i.notes}}</td>

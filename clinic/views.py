@@ -63,7 +63,7 @@ def ViewAppointment(request, pk):
             form.save()
 
             subject = subject_name
-            message = f'Hi {appointment_name},\n\nYour appointment has been confirmed. Please find the details below:\n\nDate: {appointment.datetime.strftime("%b %e %Y")}\nTime: {appointment.datetime.strftime("%I:%M %p")}\nDoctor: {appointment.lab_tech_staff}\n\nRegards,\nAsher Medical Clinic'
+            message = f'Hi {appointment_name},\n\nYour appointment has been confirmed. Please find the details below:\n\nDate: {appointment.datetime.strftime("%b %e %Y")}\nTime: {appointment.datetime.strftime("%I:%M %p")}\nDoctor: {appointment.specialization}\n\nRegards,\nAsher Medical Clinic'
             
             recepients = [appointment_email, ]
                         

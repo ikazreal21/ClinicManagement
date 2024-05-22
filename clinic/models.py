@@ -64,7 +64,7 @@ class PatientMedicalHistory(models.Model):
 class PatientRecord(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
-    lab_tech_staff = models.CharField(max_length=255, null=True, blank=True)
+    specialization = models.CharField(max_length=255, null=True, blank=True)
     staff_name = models.CharField(max_length=255, null=True, blank=True)
     procedures = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
@@ -88,7 +88,7 @@ class Appointment(models.Model):
     email = models.EmailField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
-    lab_tech_staff = models.CharField(max_length=255, null=True, blank=True)
+    specialization = models.CharField(max_length=255, null=True, blank=True)
     staff_name = models.CharField(max_length=255, null=True, blank=True)
     procedures = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
