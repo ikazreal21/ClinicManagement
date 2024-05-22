@@ -74,8 +74,8 @@ class PatientRecord(models.Model):
         verbose_name = 'Patient Record'
         verbose_name_plural = 'Patients Record'
     
-    def __str__(self):
-        return self.patient.first_name + " " + self.patient.last_name + " - " + self.procedures
+    # def __str__(self):
+    #     return self.patient.first_name + " " + self.patient.last_name + " - " + self.procedures
     
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
@@ -100,12 +100,12 @@ class Appointment(models.Model):
         verbose_name_plural = 'Appointments'
         ordering = ['-datetime']
     
-    def __str__(self):
-        if self.patient:
-            patient_name = self.patient.first_name + " " + self.patient.last_name
-        else:
-            patient_name = self.patient_name
-        return patient_name + " - " + self.procedures
+    # def __str__(self):
+    #     if self.patient:
+    #         patient_name = self.patient.first_name + " " + self.patient.last_name
+    #     else:
+    #         patient_name = self.patient_name
+    #     return patient_name + " - " + self.procedures
     
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
