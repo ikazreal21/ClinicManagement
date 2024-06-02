@@ -25,12 +25,16 @@
             {% endif %}
             <h4>Date: {{appointment.date}}</h4>
             <h4>Specialization: {{appointment.specialization | title}}</h4>
-            <h4>Procedure: {{appointment.procedures}}</h4>
+            <h4>Procedures:
+              {% for i in procedure %}
+                <br><b>{{i | title}}</b>
+              {% endfor %}
+            </h4>
             <h4>Staff: {{appointment.staff_name}}</h4>
             <h4>Status: {{appointment.status | title}}</h4>
-            {% if appointment.results %}
+            <!-- {% if appointment.results %}
                 <a href="{{appointment.results.report.url}}" class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" download target="_blank" ><i class="mdi mdi-download"></i>Download Report</a>
-            {% endif %}
+            {% endif %} -->
         </div>
         <hr>
         {% if appointment.status == 'Pending' %}
@@ -43,23 +47,33 @@
             </a>
         {% endif %}
         {% if appointment.status == 'Completed' %}
-        <div class="row">
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Upload Laboratory Results</h4>
-                    <form class="forms-sample" method="post" enctype="multipart/form-data">
+          <div class="row">
+              <div class="col-md-12 grid-margin stretch-card">
+                  <div class="card">
+                    {% if is_specialization %}
+                    <div class="card-body">
+                      <h4 class="card-title">Update Appointment Info</h4>
+                      <form class="forms-sample" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                      <div class="form-group">
-                        <label for="exampleInputUsername1">File Upload</label>
-                        <input type="file" class="form-control" id="exampleInputUsername1" accept=".pdf,.jpeg,.png,.jpg" name="report" required>
+                          {% for i in procedure %}
+                            {{i | title}}
+                            <div class="form-group">
+                              <label for="exampleInputUsername1">Staff Name</label>
+                              <input type="text" class="form-control" id="exampleInputUsername1" name="staff_name_{{i}}">
+                            </div>
+                            <div class="form-group">
+                              <label for="exampleInputUsername1">Specialization</label>
+                              <input type="text" class="form-control" id="exampleInputUsername1" name="specialization_{{i}}">
+                            </div>
+                            <hr>
+                          {% endfor %}
+                          <button type="submit" class="btn btn-primary me-2">Submit</button>
+                        </form>
                       </div>
-                      <button type="submit" class="btn btn-primary me-2">Submit</button>
-                    </form>
+                      {% endif %}
                   </div>
                 </div>
-              </div>
-        </div>
+          </div>
         {% endif %}
         <hr>
     </div>

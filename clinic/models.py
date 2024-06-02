@@ -21,6 +21,7 @@ class Patient(models.Model):
 
 
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    patient_code = models.CharField(max_length=255, null=True, blank=True)
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(max_length=255, null=True, blank=True)
@@ -36,6 +37,7 @@ class Patient(models.Model):
     emergency_contact_phone = models.CharField(max_length=255, null=True, blank=True)
     emergency_contact_relationship = models.CharField(max_length=255, null=True, blank=True)
     patientimage = models.ImageField(upload_to='patientimages/', null=True, blank=True)
+    document_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Patient'
@@ -50,6 +52,7 @@ class Patient(models.Model):
     
 class PatientMedicalHistory(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
+    patient_code = models.CharField(max_length=255, null=True, blank=True)
     medical_condition = models.CharField(max_length=255, null=True, blank=True)
     medication = models.CharField(max_length=255, null=True, blank=True)
     allergies = models.CharField(max_length=255, null=True, blank=True)
@@ -63,6 +66,7 @@ class PatientMedicalHistory(models.Model):
     
 class PatientRecord(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
+    patient_code = models.CharField(max_length=255, null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
     specialization = models.CharField(max_length=255, null=True, blank=True)
     staff_name = models.CharField(max_length=255, null=True, blank=True)
@@ -82,18 +86,20 @@ class PatientRecord(models.Model):
 
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
+    patient_code = models.CharField(max_length=255, null=True, blank=True)
     patient_name = models.CharField(max_length=255, null=True, blank=True)
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
-    specialization = models.CharField(max_length=255, null=True, blank=True)
-    staff_name = models.CharField(max_length=255, null=True, blank=True)
+    specialization = models.CharField(max_length=255, null=True, default="None")
+    staff_name = models.CharField(max_length=255, null=True, default="None")
     procedures = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=255, default="Pending", null=True, blank=True)
     report = models.FileField(upload_to='reports/', null=True, blank=True)
+    document_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Appointment'
