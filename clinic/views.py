@@ -240,7 +240,7 @@ def ViewAppointment(request, pk):
 @login_required(login_url='login')
 def AddAppointment(request):
     if request.method == 'POST':
-        procedures_appointment = [f'{request.POST.get('procedures')}']
+        procedures_appointment = [f'{request.POST.get("procedures")}']
         form = AppointmentForm(request.POST)
         time = request.POST.get('time')
         date = request.POST.get('date')
