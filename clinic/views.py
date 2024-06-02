@@ -132,7 +132,7 @@ def Home(request):
             appoinment = Appointment.objects.filter(document_id=i['id'])
             if not appoinment:
                 Appointment.objects.create(
-                    user=user_check[0],
+                    patient=user_check[0],
                     patient_code=i['userId'],
                     patient_name=i['first_name'] + " " + i['last_name'],
                     first_name=i['first_name'],
