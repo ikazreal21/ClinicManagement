@@ -24,13 +24,13 @@
                 <img class="img-lg" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
             {% endif %}
             <h4>Date: {{appointment.date}}</h4>
-            <h4>Specialization: {{appointment.specialization | title}}</h4>
             <h4>Procedures:
               {% for i in procedure %}
-                <br><b>{{i | title}}</b>
+              <br><b>{{i | title}}</b>
               {% endfor %}
             </h4>
             <h4>Staff: {{appointment.staff_name}}</h4>
+            <h4>Specialization: {{appointment.specialization | title}}</h4>
             <h4>Status: {{appointment.status | title}}</h4>
             <!-- {% if appointment.results %}
                 <a href="{{appointment.results.report.url}}" class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" download target="_blank" ><i class="mdi mdi-download"></i>Download Report</a>
