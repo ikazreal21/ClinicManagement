@@ -100,7 +100,7 @@ def Home(request):
 
     for i in patient:
         user_check = Patient.objects.filter(document_id=i['id'])
-        # print("user", user_check)
+        print(i)
         if not user_check:
             user = CustomUser.objects.create(username=i['docData']['email'], password=i['docData']['password'], is_patient=True)
 
