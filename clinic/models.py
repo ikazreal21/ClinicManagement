@@ -39,6 +39,8 @@ class Patient(models.Model):
     patientimage = models.ImageField(upload_to='patientimages/', null=True, blank=True)
     document_id = models.CharField(max_length=255, null=True, blank=True)
 
+    is_first_time = models.BooleanField(default=True)
+
     class Meta:
         verbose_name = 'Patient'
         verbose_name_plural = 'Patients'

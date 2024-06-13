@@ -14,3 +14,8 @@ class ResultsForm(ModelForm):
     class Meta:
         model = Results
         fields = '__all__'
+
+class CreateUserForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ["username", "password1", "password2"]

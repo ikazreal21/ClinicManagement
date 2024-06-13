@@ -19,4 +19,14 @@ urlpatterns = [
     # Auth
     path("login/", views.Login, name="login"),
     path("logout/", views.Logout, name="logout"),
+
+    ######################
+    # Patient
+    ######################
+    path("patient_register/", views.PatientRegister, name="patient_register"),
+    path("patient_login/", views.PatientLogin, name="patient_login"),
+    path("patient_logout/", views.PatientLogout, name="patient_logout"),
+    
+    path("patients/", views.PatientHome, name="patientdashboard"),
+    path("patient_profile/", views.PatientProfile, name="patient_profile"),
 ]
