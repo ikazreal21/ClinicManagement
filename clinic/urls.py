@@ -1,9 +1,10 @@
 from django.contrib.auth import views as auth_views
+from django.urls import re_path as url
 
 from django.urls import path
 from . import views
 
-
+from pwa.views import manifest, service_worker, offline
 
 
 urlpatterns = [
@@ -41,4 +42,7 @@ urlpatterns = [
     # terms and conditions
     path("terms/", views.Terms, name="terms"),
 
+    url(r'^serviceworker\.js$', service_worker, name='serviceworker'),
+    url(r'^manifest\.json$', manifest, name='manifest'),
+    url('^offline/$', offline, name='offline')
 ]
