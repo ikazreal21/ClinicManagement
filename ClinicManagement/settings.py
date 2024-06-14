@@ -172,19 +172,19 @@ PWA_APP_START_URL = 'patients/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
-        'src': '/static/image/android-launchericon-512-512.png',
+        'src': '/static/images/android-launchericon-512-512.png',
         'sizes': '512x512'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/static/image/android-launchericon-512-512.png',
+        'src': '/static/images/512.png',
         'sizes': '512x512'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': '/static/image/p.png',
+        'src': '/static/images/logo.png',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
