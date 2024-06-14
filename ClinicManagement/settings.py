@@ -168,7 +168,7 @@ PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = 'https://ashermd-48b5aa8a607a.herokuapp.com/'
 PWA_APP_ORIENTATION = 'any'
-PWA_APP_START_URL = 'https://ashermd-48b5aa8a607a.herokuapp.com/patients'
+PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
