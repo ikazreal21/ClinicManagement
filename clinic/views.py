@@ -40,7 +40,7 @@ def PatientDetails(request, pk):
     patient = Patient.objects.get(id=pk)
     medical_history = PatientMedicalHistory.objects.filter(patient=patient)
     records = PatientRecord.objects.filter(patient=patient)
-    appointment = Appointment.objects.filter(patient=patient)
+    appointment = Appointment.objects.filter(patient=patient).filter(status="Completed").order_by('-datetime')
     context = {'patient': patient, 'medical_history': medical_history, 'records': records, 'appointment': appointment}
     return render(request, 'clinic/patientdetails.html', context)
 

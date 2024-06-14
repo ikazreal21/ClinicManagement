@@ -32,7 +32,7 @@
             <h4>{{patient.emergency_contact_relationship}}</h4>
         </div>
         <hr>
-        <div class="row" style="margin-top: 1rem;">
+        <!-- <div class="row" style="margin-top: 1rem;">
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -60,8 +60,8 @@
                   </div>
                 </div>
               </div>
-        </div>
-        <div class="row" style="margin-top: 1rem;">
+        </div> -->
+        <!-- <div class="row" style="margin-top: 1rem;">
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -96,7 +96,7 @@
                   </div>
                 </div>
               </div>
-        </div>
+        </div> -->
         <div class="row" style="margin-top: 1rem;">
           <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
@@ -108,8 +108,8 @@
                         <tr>
                           <th>Date</th>
                           <th>Specialization</th>
-                          <th>Procedure</th>
                           <th>Staff</th>
+                          <th>Procedure</th>
                           <th>Notes</th>
                           <th>Reports</th>
                         </tr>
@@ -120,7 +120,11 @@
                           <td>{{i.date}}</td>
                           <td>{{i.specialization| title}}</td>
                           <td>{{i.staff_name}}</td>
-                          <td>{{i.procedures}}</td>
+                          <td>
+                            {% for j in i.procedures|get_string_as_list %}
+                              <b>{{j|title}}</b> <br>
+                            {% endfor %}
+                          </td>
                           <td>{{i.notes}}</td>
                           <td> 
                               <a class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" href="{% url 'viewappointment' i.id %}" target="_blank"><i class="mdi mdi-ambulance"></i>View Appointment
