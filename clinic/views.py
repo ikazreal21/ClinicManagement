@@ -13,6 +13,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
+
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime, time, timedelta
 from pytz import timezone
@@ -317,8 +319,9 @@ def CancelAppointment(request, pk):
 def PatientAddAppointment(request):
     patient = Patient.objects.get(user=request.user)
     procedures = Procedures.objects.all()
+    philippines_now = timezone.localtime(timezone.now())
     date_today = date.today()
-    date_today_edited = date_today.strftime('%Y-%m-%d')
+    date_today_edited = philippines_now.strftime('%Y-%m-%d')
     
 
     if patient.is_first_time:

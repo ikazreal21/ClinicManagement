@@ -194,3 +194,5 @@ PWA_APP_DISPLAY_OVERRIDE = {
     
 }
 
+TIME_ZONE = 'Asia/Manila'
+USE_TZ = True
