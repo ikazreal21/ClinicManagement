@@ -225,7 +225,7 @@ def find_next_available_appointment_time(patient, appointment_datetime):
     """Find the next available appointment time with 30-minute interval."""
     latest_appointment = Appointment.objects.filter(
         datetime=appointment_datetime
-    ).order_by('-datetime').first()
+    ).filter(Q(status="Approved") | Q(status="Pending")).order_by('-datetime').first()
     
     if latest_appointment:
         next_appointment_time = latest_appointment.datetime + timedelta(minutes=30)
