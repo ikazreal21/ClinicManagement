@@ -443,3 +443,17 @@ def PatientLogout(request):
 
 def Terms(request):
     return render(request, 'clinic/terms.html')
+
+def AssetLink(request):
+    assetlink = [
+    {
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target": {
+        "namespace": "android_app",
+        "package_name": "xyz.appmaker.xxecbh",
+        "sha256_cert_fingerprints": ["A8:43:AB:D1:E4:52:13:79:29:D1:E2:B9:13:6F:22:7C:29:73:EB:FE:31:E6:62:3A:7D:F8:CA:0E:CA:F8:04:70"]
+        }
+    }
+    ]
+
+    return JsonResponse(assetlink, safe=False)

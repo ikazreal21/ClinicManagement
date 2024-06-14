@@ -42,6 +42,8 @@ urlpatterns = [
     # terms and conditions
     path("terms/", views.Terms, name="terms"),
 
+    path(".well-known/assetlinks.json", views.AssetLink),
+
     url(r'^serviceworker\.js$', service_worker, name='serviceworker'),
     url(r'^manifest\.json$', manifest, name='manifest'),
     url('^offline/$', offline, name='offline')
