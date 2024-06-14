@@ -96,7 +96,7 @@ def ViewAppointment(request, pk):
         PatientNotification.objects.create(
             patient=appointment.patient,
             appointment_id=appointment.id,
-            title='Appointment Cancelled',
+            title='Your Appointment has been Updated',
             message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has Already have a result you can received the Physical Copy on Our Clinic.'
         )
 
@@ -222,7 +222,6 @@ def is_within_clinic_hours(datetime_obj):
 def find_next_available_appointment_time(patient, appointment_datetime):
     """Find the next available appointment time with 30-minute interval."""
     latest_appointment = Appointment.objects.filter(
-        patient=patient,
         datetime=appointment_datetime
     ).order_by('-datetime').first()
     
