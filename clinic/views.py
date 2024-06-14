@@ -442,7 +442,7 @@ def PatientLogout(request):
 
 
 def Terms(request):
-    return render(request, 'clinic/terms.html')
+    return render(request, 'patient/terms.html')
 
 def AssetLink(request):
     assetlink = [
