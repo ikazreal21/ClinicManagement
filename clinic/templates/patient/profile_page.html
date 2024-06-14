@@ -1,0 +1,81 @@
+{% extends 'patient/base.html' %} 
+
+{% block content %} 
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Profile/User Details</h4>
+          <form class="forms-sample" method="post">
+            {% csrf_token %}
+            <!-- <div class="form-group">
+              <label for="exampleInputUsername1">Patient Name</label>
+              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Name" name="patient_name">
+            </div> -->
+            <div class="form-group">
+              <label for="exampleInputUsername1">First Name</label>
+              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="First Name" name="first_name" value="{{patient.first_name}}">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputUsername1">Last Name</label>
+              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Last Name" name="last_name" value="{{patient.last_name}}">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputUsername1">Phone</label>
+              <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Phone" name="phone" value="{{patient.phone}}">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputUsername1">Email</label>
+              <input type="email" class="form-control" id="exampleInputUsername1" placeholder="Email" name="email" value="{{patient.email}}">
+            </div>
+            <div class="form-group">
+                <label for="exampleTextarea1">Address</label>
+                <textarea class="form-control" name="address" id="exampleTextarea1" rows="5">{{patient.address}}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputUsername1">City</label>
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="City" name="city" value="{{patient.city}}">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputUsername1">Zip Code</label>
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Zip Code" name="zip_code" value="{{patient.zip_code}}">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Date of Birth</label>
+              <input type="date" class="form-control" id="exampleInputPassword1" name="date_of_birth" value='{{patient.date_of_birth|date:"Y-m-d" }}'>
+            </div>
+            <div class="form-group">
+                <label for="exampleSelectGender">Gender</label>
+                  <select class="form-control" id="exampleSelectGender" name="gender">
+                    {% if patient.gender == "M" %}
+                        <option selected value="M">Male</option>
+                        <option value="F">Female</option>
+                    {% else %}
+                        <option  value="M">Male</option>
+                        <option selected value="F">Female</option>
+                    {% endif %}
+                  </select>
+            </div>
+            <hr>
+            <h4 class="card-title">Emergency Contact Details</h4>
+            <div class="form-group">
+                <label for="exampleInputUsername1">Emergency Contact Name</label>
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Name Name" name="emergency_contact_name" value="{{patient.emergency_contact_name}}">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputUsername1">Emergency Contact Number</label>
+                <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Number Name" name="emergency_contact_phone" value="{{patient.emergency_contact_phone}}">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputUsername1">Emergency Contact Relationship</label>
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Relationship" name="emergency_contact_relationship" value="{{patient.emergency_contact_relationship}}">
+            </div>
+            <hr>
+            <button type="submit" class="btn btn-primary me-2">Save</button>
+            <button class="btn btn-light">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

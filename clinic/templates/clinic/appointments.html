@@ -31,9 +31,11 @@
                     <td>{{i.date}}</td>
                     <td>
                       {% if i.status == 'Pending' %}
-                      <label class="badge badge-danger">Pending</label>
+                      <label class="badge badge-info">Pending</label>
                       {% elif i.status == 'Completed' %}
                       <label class="badge badge-success">Completed</label>
+                      {% elif i.status == 'Cancelled' %}
+                        <label class="badge badge-danger">Cancelled</label>
                       {% else %}
                       <label class="badge badge-warning">In progress</label>
                       {% endif %}

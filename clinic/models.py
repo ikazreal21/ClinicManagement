@@ -108,12 +108,8 @@ class Appointment(models.Model):
         verbose_name_plural = 'Appointments'
         ordering = ['-datetime']
     
-    # def __str__(self):
-    #     if self.patient:
-    #         patient_name = self.patient.first_name + " " + self.patient.last_name
-    #     else:
-    #         patient_name = self.patient_name
-    #     return patient_name + " - " + self.procedures
+    def __str__(self):
+        return self.datetime.strftime('%b %e %Y %I:%M %p')
     
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
@@ -126,9 +122,34 @@ class Results(models.Model):
         verbose_name = 'Result'
         verbose_name_plural = 'Results'
 
+
+class PatientNotification(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
+    appointment_id = models.CharField(max_length=255, null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    message = models.TextField(null=True, blank=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Patient Notification'
+        verbose_name_plural = 'Patients Notifications'
+
+    def __str__(self):
+        return self.title
+
     # def __str__(self):
     #     if self.patient.patient:
     #         patient_name = self.patient.patient.first_name + " " + self.patient.patient.last_name
     #     else:
     #         patient_name = self.patient.patient_name
     #     return patient_name + " - " + self.patient.procedures
+
+class Procedures(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Procedure'
+        verbose_name_plural = 'Procedures'
+
+    def __str__(self):
+        return self.name

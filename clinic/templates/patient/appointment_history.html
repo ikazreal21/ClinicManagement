@@ -1,0 +1,60 @@
+{% extends 'patient/base.html' %} 
+
+{% block content %} 
+<div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Appointments</h4>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Procedure</th>
+                    <th>Appointment Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in appointments %}
+                  <tr>
+                    <td>
+                        {% for j in i.procedures|get_string_as_list %}
+                            <b>{{j|title}}</b> <br>
+                        {% endfor %}
+                    </td>
+                    <td>{{i.date}}</td>
+                    <td>
+                        {% if i.status == 'Pending' %}
+                            <label class="badge badge-info">Pending</label>
+                        {% elif i.status == 'Completed' %}
+                            <label class="badge badge-success">Completed</label>
+                        {% elif i.status == 'Cancelled'  %}
+                            <label class="badge badge-danger">Cancelled</label>
+                        {% elif i.status == 'Declined'  %}
+                            <label class="badge badge-danger">Declined</label>
+                        {% else %}
+                            <label class="badge badge-warning">In progress</label>
+                      {% endif %}
+                    </td>
+                      <td class="text-danger"> 
+                        <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'view_appointment' i.id %}"><i class="mdi mdi-briefcase-check">
+                          </i>View
+                        </a>
+                        {% if i.status == 'Pending' %}
+                            <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'cancel_appointment' i.id %}"><i class="mdi mdi-close-box">
+                            </i>Cancel
+                            </a>
+                        {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'patient/base.html' %} 
+
+{% block content %} 
+
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger alert-left-bordered border-danger alert-dismissible d-flex align-items-center p-md-4 mb-2 fade show" 		role="alert">
+                    <i class="gd-flag-alt-2 icon-text text-warning mr-2"></i>
+                    <p class="mb-0">
+                        <strong>{{ message }}</strong> 
+                    </p>
+                </div>
+            {% else %}
+                <div class="alert alert-success alert-left-bordered border-success alert-dismissible d-flex align-items-center p-md-4 mb-2 fade show" 		role="alert">
+                    <i class="gd-flag-alt-2 icon-text text-warning mr-2"></i>
+                    <p class="mb-0">
+                        <strong>{{ message }}</strong> 
+                    </p>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+        <div class="card-body">
+          <h4 class="card-title">Appointment Form</h4>
+          <form class="forms-sample" id="select-form" method="post">
+            {% csrf_token %}
+            <!-- <div class="form-group">
+              <label for="exampleInputUsername1">Patient Name</label>
+              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Name" name="patient_name">
+            </div> -->
+            <input type="hidden" name="selects" id="selects">
+            <div class="containers">
+                <h5>Procedures</h5>
+                <div id="select-container">
+                    <div class="select-wrapper form-group">
+                        <div class="input-group">
+                            <select class="form-control">
+                                {% for procedure in procedures %}
+                                <option value="{{procedure.name}}">{{procedure.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-warning me-2 remove-btn" type="button" onclick="removeSelect(this)">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary me-2" id="add-btn">Add Select</button>
+            </div>
+            <div class="form-group">
+                
+              <label for="exampleInputPassword1">Date</label>
+              <input type="date"  class="form-control" id="exampleInputPassword1" name="date" min="{{ today_date }}" required>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputConfirmPassword1">Time</label>
+              <input type="time" class="form-control" id="exampleInputConfirmPassword1" name="time" required>
+            </div>
+            <button type="submit" class="btn btn-primary me-2">Submit</button>
+            <button class="btn btn-light">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+<script>
+    document.getElementById('add-btn').addEventListener('click', function() {
+        addSelect();
+    });
+
+    document.getElementById('select-form').addEventListener('submit', function(event) {
+        collectSelectValues();
+    });
+
+    function addSelect() {
+        const selectContainer = document.getElementById('select-container');
+        
+        // Clone the first select-wrapper element
+        const originalSelectWrapper = document.querySelector('.select-wrapper');
+        const newSelectWrapper = originalSelectWrapper.cloneNode(true);
+        
+        // Add event listener to the new remove button
+        const newRemoveButton = newSelectWrapper.querySelector('.remove-btn');
+        newRemoveButton.onclick = function() {
+            removeSelect(newRemoveButton);
+        };
+        
+        selectContainer.appendChild(newSelectWrapper);
+    }
+
+    function removeSelect(button) {
+        const selectWrapper = button.parentElement;
+        
+        // Ensure the first select-wrapper is not removed
+        if (selectWrapper === document.querySelector('.input-group:first-child')) {
+            return;
+        }
+        
+        selectWrapper.remove();
+    }
+
+    function collectSelectValues() {
+        const selectElements = document.querySelectorAll('#select-container select');
+        let selectValues = [];
+
+        selectElements.forEach(select => {
+            selectValues.push(select.value);
+        });
+
+        const selectsInput = document.querySelector('input[name="selects"]');
+        selectsInput.value = selectValues.join(',');
+    }
+
+</script>
+
+{% endblock %}

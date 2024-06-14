@@ -46,6 +46,8 @@ admin.site.register(PatientMedicalHistory)
 admin.site.register(PatientRecord)
 admin.site.register(Appointment)
 admin.site.register(Results)
+admin.site.register(Procedures)
+admin.site.register(PatientNotification)  
 
 
 admin.site.site_header = "Asher MD Admin"
