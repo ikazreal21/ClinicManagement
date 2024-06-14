@@ -25,22 +25,22 @@ urlpatterns = [
     ######################
     # Patient
     ######################
-    path("patient_register/", views.PatientRegister, name="patient_register"),
-    path("patient_login/", views.PatientLogin, name="patient_login"),
-    path("patient_logout/", views.PatientLogout, name="patient_logout"),
+    path("patient_register", views.PatientRegister, name="patient_register"),
+    path("patient_login", views.PatientLogin, name="patient_login"),
+    path("patient_logout", views.PatientLogout, name="patient_logout"),
     
-    path("patients/", views.PatientHome, name="patientdashboard"),
-    path("patient_profile/", views.PatientProfile, name="patient_profile"),
-    path("patient_notifications/", views.PatientNotif, name="patient_notifications"),
-    path("view_notification/<str:pk>/", views.ViewNotif, name="view_notification"),
-    path("view_appointment/<str:pk>/", views.ViewPatientAppointment, name="view_appointment"),
+    path("patients", views.PatientHome, name="patientdashboard"),
+    path("patient_profile", views.PatientProfile, name="patient_profile"),
+    path("patient_notifications", views.PatientNotif, name="patient_notifications"),
+    path("view_notification/<str:pk>", views.ViewNotif, name="view_notification"),
+    path("view_appointment/<str:pk>", views.ViewPatientAppointment, name="view_appointment"),
     path("patient_appointments/", views.PatientAppointment, name="patient_appointments"),
-    path("patient_appointmenthistory/", views.PatientRecord, name="patient_appointmenthistory"),    
-    path("patient_appointment_form/", views.PatientAddAppointment, name="patient_appointment_form"),
-    path("cancel_appointment/<str:pk>/", views.CancelAppointment, name="cancel_appointment"),
+    path("patient_appointmenthistory", views.PatientRecord, name="patient_appointmenthistory"),    
+    path("patient_appointment_form", views.PatientAddAppointment, name="patient_appointment_form"),
+    path("cancel_appointment/<str:pk>", views.CancelAppointment, name="cancel_appointment"),
 
     # terms and conditions
-    path("terms/", views.Terms, name="terms"),
+    path("terms", views.Terms, name="terms"),
 
     path(".well-known/assetlinks.json", views.AssetLink),
 
