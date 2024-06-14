@@ -58,25 +58,37 @@
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown"> 
-            {% if notif.0.is_read %}
-              <a class="nav-link" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="icon-bell"></i>
-                <span class="count"></span>
-              </a>
+            {% if notif.0 %}
+              {% if notif.0.is_read %}
+                <a class="nav-link" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="icon-bell"></i>
+                  <span class="count"></span>
+                </a>
+              {% else %}
+                <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="icon-bell text-danger"></i>
+                  <span class="count"></span>
+                </a>
+              {% endif %}
             {% else %}
-              <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="icon-bell"></i>
                 <span class="count"></span>
               </a>
             {% endif %}
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
-              {% if notif.0.is_read %}
+              {% if notif.0 %}
+                {% if notif.0.is_read %}
+
+                {% else %}
+                  <a class="dropdown-item py-3" href="{% url 'patient_notifications' %}">
+                    <p class="mb-0 font-weight-medium float-left">You have unread notification </p>
+                    <span class="badge badge-pill badge-primary float-right">View all</span>
+                  </a>
+                {% endif %}
 
               {% else %}
-                <a class="dropdown-item py-3" href="{% url 'patient_notifications' %}">
-                  <p class="mb-0 font-weight-medium float-left">You have unread notification </p>
-                  <span class="badge badge-pill badge-primary float-right">View all</span>
-                </a>
+
               {% endif %}
 
               <div class="dropdown-divider"></div>

@@ -17,7 +17,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime, time, timedelta
-from pytz import timezone
+# from pytz import timezone
 
 from django.http import JsonResponse
 
