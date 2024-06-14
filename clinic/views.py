@@ -446,14 +446,14 @@ def Terms(request):
 
 def AssetLink(request):
     assetlink = [
-    {
-        "relation": ["delegate_permission/common.handle_all_urls"],
-        "target": {
-        "namespace": "android_app",
-        "package_name": "xyz.appmaker.alidqd",
-        "sha256_cert_fingerprints": ["5F:41:64:86:81:CD:E9:A8:99:47:E4:F1:5D:8A:46:2F:35:9E:B4:A9:DB:48:4C:DA:B2:3D:15:A9:5A:FE:98:5E"]
+        {
+            "relation": ["delegate_permission/common.handle_all_urls"],
+            "target": {
+            "namespace": "android_app",
+            "package_name": "xyz.appmaker.zacrfh",
+            "sha256_cert_fingerprints": ["0F:A1:A9:0E:25:08:3D:BD:60:BB:FC:5C:E4:76:BB:85:08:E6:C1:71:DF:21:C6:90:61:1D:28:A2:5D:88:C2:07"]
+            }
         }
-    }
     ]
 
     return JsonResponse(assetlink, safe=False)
