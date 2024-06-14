@@ -36,7 +36,9 @@
                       <label class="badge badge-success">Completed</label>
                       {% elif i.status == 'Cancelled' %}
                         <label class="badge badge-danger">Cancelled</label>
-                      {% else %}
+                      {% elif i.status == 'Declined' %}
+                      <label class="badge badge-danger">Declined</label>
+                    {% else %}
                       <label class="badge badge-warning">In progress</label>
                       {% endif %}
                     </td>

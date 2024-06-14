@@ -392,7 +392,7 @@ def ViewPatientAppointment(request, pk):
         
 
 @login_required(login_url='patient_login')
-def PatientRecord(request):
+def PatientRecords(request):
     patient = Patient.objects.get(user=request.user)
     if patient.is_first_time:
         return redirect('patient_profile')

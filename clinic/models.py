@@ -45,11 +45,11 @@ class Patient(models.Model):
         verbose_name = 'Patient'
         verbose_name_plural = 'Patients'
 
-    def __str__(self):
-        return self.first_name + " " + self.last_name
+    # def __str__(self):
+    #     return self.first_name + " " + self.last_name
     
-    def date(self):
-        return self.date_of_birth.strftime('%b %e %Y')
+    # def date(self):
+    #     # return self.date_of_birth.strftime('%b %e %Y')
     
     
 class PatientMedicalHistory(models.Model):
