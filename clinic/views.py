@@ -225,9 +225,10 @@ def find_next_available_appointment_time(patient, appointment_datetime):
     """Find the next available appointment time with 30-minute interval."""
     latest_appointment = Appointment.objects.filter(
         datetime=appointment_datetime
-    ).filter(Q(status="Approved") | Q(status="Pending")).order_by('-datetime').first()
+    ).filter(Q(status="Approved") | Q(status="Pending")).order_by('datetime').first()
     
     if latest_appointment:
+        print(latest_appointment.datetime)
         next_appointment_time = latest_appointment.datetime + timedelta(minutes=30)
 
         PatientNotification.objects.create(
@@ -237,10 +238,11 @@ def find_next_available_appointment_time(patient, appointment_datetime):
             message=f'Your appointment has been rescheduled to {next_appointment_time.strftime("%b %e %Y %I:%M %p")}.'
         )
     else:
+        print(appointment_datetime)
         next_appointment_time = appointment_datetime
     
-    while latest_appointment and not is_within_clinic_hours(next_appointment_time):
-        next_appointment_time += timedelta(minutes=30)
+    # while next_appointment_time and not is_within_clinic_hours(next_appointment_time):
+    #     next_appointment_time += timedelta(minutes=30)
     
     return next_appointment_time
 
