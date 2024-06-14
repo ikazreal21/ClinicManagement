@@ -41,10 +41,14 @@
             <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}" ><i class="mdi mdi-bulletin-board">
             </i>Approve
             </a>
+            <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'declineappointment' i.id %}"><i class="mdi mdi-close-box">
+            </i>Decline
+            </a>
         {% elif appointment.status == 'Approved' %}
             <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'completeappointment' appointment.id %}" ><i class="mdi mdi-check">
             </i>Complete
             </a>
+        
         {% endif %}
         {% if appointment.status == 'Completed' %}
           <div class="row">
