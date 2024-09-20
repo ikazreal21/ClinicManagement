@@ -2,7 +2,7 @@
 from django.template.defaulttags import register
 from calendar import c
 from dataclasses import is_dataclass
-from lib2to3.pgen2 import driver
+# from lib2to3.pgen2 import driver
 from multiprocessing import context
 from operator import inv
 import re
@@ -450,14 +450,14 @@ def Terms(request):
 
 def AssetLink(request):
     assetlink = [
-        {
-            "relation": ["delegate_permission/common.handle_all_urls"],
-            "target": {
-            "namespace": "android_app",
-            "package_name": "xyz.appmaker.zacrfh",
-            "sha256_cert_fingerprints": ["0F:A1:A9:0E:25:08:3D:BD:60:BB:FC:5C:E4:76:BB:85:08:E6:C1:71:DF:21:C6:90:61:1D:28:A2:5D:88:C2:07"]
-            }
+    {
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target": {
+        "namespace": "android_app",
+        "package_name": "xyz.appmaker.ryqizd",
+        "sha256_cert_fingerprints": ["B5:E2:51:27:03:CA:0B:6D:24:F1:74:BD:71:8B:74:D3:46:CA:BB:8A:99:27:75:D3:98:28:33:F9:34:21:8B:99"]
         }
+    }
     ]
 
     return JsonResponse(assetlink, safe=False)

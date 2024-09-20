@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-pwfsuw31l57rcu852*1oe348#&ou6shftnvpi^x*nn2$ymr%a_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['ashermd-48b5aa8a607a.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['ashermd-48b5aa8a607a.herokuapp.com', '127.0.0.1', '192.168.1.228', 'ashermd.ellequin.com']
 
 # Application definition
 
@@ -87,8 +87,10 @@ DATABASES = {
 
 import dj_database_url
 
-DATABASES['default'] = dj_database_url.parse("mysql://ikn3l51g99pssq4h:fhl5qkr8aaa4khmt@durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/wn53y8df1885rh5s", conn_max_age=600)
-DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+# DATABASES['default'] = dj_database_url.parse("mysql://ikn3l51g99pssq4h:fhl5qkr8aaa4khmt@durvbryvdw2sjcm5.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/wn53y8df1885rh5s", conn_max_age=600)
+# DATABASES['default']['OPTIONS'] = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+
+DATABASES['default'] = dj_database_url.parse("postgres://hosted_user:QnajRBTJrwxSRfbV2yvH2pnwk5@192.168.1.228:5432/clinic", conn_max_age=600)
 
 
 # Password validation
@@ -136,6 +138,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
+CSRF_TRUSTED_ORIGINS = ['https://ashermd.ellequin.com']
+CORS_ORIGIN_WHITELIST = ['https://ashermd.ellequin.com']
+
 AUTH_USER_MODEL = 'clinic.CustomUser'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -166,7 +171,7 @@ PWA_APP_DESCRIPTION = "Clinic Management System"
 PWA_APP_THEME_COLOR = '#1F3BB3'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
-PWA_APP_SCOPE = 'https://ashermd-48b5aa8a607a.herokuapp.com/'
+PWA_APP_SCOPE = 'https://ashermd.ellequin.com'
 PWA_APP_ORIENTATION = 'any'
 PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
@@ -184,7 +189,7 @@ PWA_APP_ICONS_APPLE = [
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': '/static/images/logo.png',
+        'src': '/static/images/512.png',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
@@ -196,3 +201,4 @@ PWA_APP_DISPLAY_OVERRIDE = {
 
 # TIME_ZONE = 'Asia/Manila'
 # USE_TZ = True
+

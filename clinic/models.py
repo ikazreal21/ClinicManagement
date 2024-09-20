@@ -145,7 +145,14 @@ class PatientNotification(models.Model):
     #     return patient_name + " - " + self.patient.procedures
 
 class Procedures(models.Model):
+    CATEGORY = (
+        ("1", "Laboratory"),
+        ("2", "General Doctor"),
+    )
+
+
     name = models.CharField(max_length=255, null=True, blank=True)
+    category = models.CharField(max_length=1, choices=CATEGORY, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Procedure'
