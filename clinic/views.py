@@ -206,6 +206,8 @@ def Calendar(request):
 
 def Login(request):
     if request.user.is_authenticated:
+        if request.user.is_doctor:
+            return redirect('patientdashboard')
         return redirect('home')
     else:
         if request.method == 'POST':
@@ -473,14 +475,20 @@ def Terms(request):
 
 def AssetLink(request):
     assetlink = [
-    {
-        "relation": ["delegate_permission/common.handle_all_urls"],
-        "target": {
-        "namespace": "android_app",
-        "package_name": "xyz.appmaker.ryqizd",
-        "sha256_cert_fingerprints": ["B5:E2:51:27:03:CA:0B:6D:24:F1:74:BD:71:8B:74:D3:46:CA:BB:8A:99:27:75:D3:98:28:33:F9:34:21:8B:99"]
+        {
+            "relation": ["delegate_permission/common.handle_all_urls"],
+            "target": {
+            "namespace": "android_app",
+            "package_name": "xyz.appmaker.dyblcl",
+            "sha256_cert_fingerprints": ["E5:21:8D:A3:2E:01:95:A6:ED:86:69:57:7F:21:1A:61:F1:B7:49:4C:BE:38:89:99:84:33:F2:69:7E:38:37:E2"]
+            }
         }
-    }
     ]
 
     return JsonResponse(assetlink, safe=False)
+
+
+def DoctorHome(request):
+    appointments = Appointment.objects.filter(status="Approved").order_by('datetime')
+    context = {'appointments': appointments}
+    return render(request, 'doctor/calendar.html')
