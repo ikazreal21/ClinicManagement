@@ -5,83 +5,122 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            {% if profile %}
-              <h3 class="card-title card-title-dash">{{profile.first_name}} {{profile.last_name}}</h3>
-            {% else %}
-              <h3 class="card-title card-title-dash">No Account - {{appointment.patient_name}}</h3>
-            {% endif %}
-          </div>
-          <div>
-            <a class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" href="{% url 'appointments' %}"><i class="mdi mdi-arrow-left"></i>Go Back
-            </a>
-          </div>
+            <div>
+                {% if profile %}
+                <h3 class="card-title card-title-dash">{{profile.first_name}} {{profile.last_name}}</h3>
+                {% else %}
+                <h3 class="card-title card-title-dash">No Account - {{appointment.patient_name}}</h3>
+                {% endif %}
+            </div>
+            <div>
+                <a class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" href="{% url 'appointments' %}"><i class="mdi mdi-arrow-left"></i>Go Back
+                </a>
+            </div>
         </div>
         <div style="text-align: center;">
             {% if profile.patientimage %}
-                <img class="img-lg" src="{{profile.patientimage.url}}" alt="profile" style="margin-bottom: 1rem;">
+            <img class="img-lg" src="{{profile.patientimage.url}}" alt="profile" style="margin-bottom: 1rem;">
             {% else %}
-                <img class="img-lg" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
+            <img class="img-lg" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
             {% endif %}
             <h4>Date: {{appointment.date}}</h4>
             <h4>Procedures:
-              {% for i in procedure %}
-              <br><b>{{i | title}}</b>
-              {% endfor %}
+                {% for i in procedure %}
+                <br><b>{{i | title}}</b>
+                {% endfor %}
             </h4>
             <h4>Staff: {{appointment.staff_name}}</h4>
             <h4>Specialization: {{appointment.specialization | title}}</h4>
             <h4>Status: {{appointment.status | title}}</h4>
-            <!-- {% if appointment.results %}
-                <a href="{{appointment.results.report.url}}" class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" download target="_blank" ><i class="mdi mdi-download"></i>Download Report</a>
-            {% endif %} -->
         </div>
         <hr>
         {% if appointment.status == 'Pending' %}
-            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}" ><i class="mdi mdi-bulletin-board">
+            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}"><i class="mdi mdi-bulletin-board">
             </i>Approve
             </a>
-            <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'declineappointment' appointment.id %}"><i class="mdi mdi-close-box">
-            </i>Decline
-            </a>
+            <!-- Trigger the modal with this button -->
+            <button type="button" class="btn btn-danger btn-lg text-white mb-0 me-0" onclick="showDeclineModal()">
+                <i class="mdi mdi-close-box"></i>Decline
+            </button>
         {% elif appointment.status == 'Approved' %}
-            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'completeappointment' appointment.id %}" ><i class="mdi mdi-check">
+            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'completeappointment' appointment.id %}"><i class="mdi mdi-check">
             </i>Complete
             </a>
-        
         {% endif %}
-        {% if appointment.status == 'Completed' %}
-          <div class="row">
-              <div class="col-md-12 grid-margin stretch-card">
-                  <div class="card">
-                    {% if is_specialization %}
-                    <div class="card-body">
-                      <h4 class="card-title">Update Appointment Info</h4>
-                      <form class="forms-sample" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                          {% for i in procedure %}
-                            {{i | title}}
-                            <div class="form-group">
-                              <label for="exampleInputUsername1">Staff Name</label>
-                              <input type="text" class="form-control" id="exampleInputUsername1" name="staff_name_{{i}}">
-                            </div>
-                            <div class="form-group">
-                              <label for="exampleInputUsername1">Specialization</label>
-                              <input type="text" class="form-control" id="exampleInputUsername1" name="specialization_{{i}}">
-                            </div>
-                            <hr>
-                          {% endfor %}
-                          <button type="submit" class="btn btn-primary me-2">Submit</button>
-                        </form>
-                      </div>
-                      {% endif %}
-                  </div>
-                </div>
-          </div>
-        {% endif %}
-        <hr>
     </div>
 </div>
 
+<!-- Decline Modal -->
+<div id="declineModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Decline Appointment</h5>
+            <button type="button" class="close" onclick="hideDeclineModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="declineForm" method="POST" action="{% url 'declineappointment' appointment.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="declineReason">Reason for Decline:</label>
+                    <textarea class="form-control" id="declineReason" name="decline_reason" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-danger">Submit</button>
+                <button type="button" class="btn btn-secondary" onclick="hideDeclineModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal styles */
+    .modal-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 5px 15px rgba(0,0,0,.5);
+        padding: 20px;
+        z-index: 1050;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal-body {
+        margin-top: 20px;
+    }
+    .close {
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+    }
+    /* Modal background */
+    #declineModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+    }
+</style>
+
+<script>
+    // Show the decline modal
+    function showDeclineModal() {
+        document.getElementById("declineModal").style.display = "block";
+    }
+
+    // Hide the decline modal
+    function hideDeclineModal() {
+        document.getElementById("declineModal").style.display = "none";
+    }
+</script>
 
 {% endblock %}

@@ -29,7 +29,8 @@ urlpatterns = [
     path("patient_login/", views.PatientLogin, name="patient_login"),
     path("patient_logout/", views.PatientLogout, name="patient_logout"),
     
-    path("", views.PatientHome, name="patientdashboard"),
+    path("", views.Services, name="services"),
+    path("dashboard", views.PatientHome, name="patientdashboard"),
     path("patient_profile/", views.PatientProfile, name="patient_profile"),
     path("patient_notifications/", views.PatientNotif, name="patient_notifications"),
     path("view_notification/<str:pk>/", views.ViewNotif, name="view_notification"),

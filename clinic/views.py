@@ -158,16 +158,32 @@ def ApproveAppointment(request, pk):
 
 @login_required(login_url='login')
 def DeclineAppointment(request, pk):
-    appointment = Appointment.objects.get(id=pk)
-    appointment.status = "Declined"
-    appointment.save()
-    PatientNotification.objects.create(
+    if request.method == 'POST':
+        reason = request.POST.get('decline_reason')
+        # Retrieve and update the appointment status and reason
+        appointment = Appointment.objects.get(id=pk)
+        appointment.status = 'Declined'
+        appointment.decline_reason = reason  # Assuming there's a field to store this
+        appointment.save()
+
+        PatientNotification.objects.create(
         patient=appointment.patient,
         appointment_id=appointment.id,
         title='Appointment Declined',
-        message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Declined.'
-    )
-    return redirect('appointments')
+        message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Declined. for the reason of {reason}'
+        )
+        
+        return redirect('appointments')
+    # appointment = Appointment.objects.get(id=pk)
+    # appointment.status = "Declined"
+    # appointment.save()
+    # PatientNotification.objects.create(
+    #     patient=appointment.patient,
+    #     appointment_id=appointment.id,
+    #     title='Appointment Declined',
+    #     message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Declined.'
+    # )
+    # return redirect('appointments')
 
 @login_required(login_url='login')
 def CompleteAppointment(request, pk):
@@ -403,6 +419,13 @@ def PatientRecords(request):
     records = Appointment.objects.filter(patient=patient).filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined')).order_by('datetime')
     context = {'appointments': records}
     return render(request, 'patient/appointment_history.html', context)
+
+@login_required(login_url='patient_login')
+def Services(request):
+    services = Procedures.objects.all()
+    context = {'services': services}
+    return render(request, 'patient/services.html', context)
+
 
 def PatientLogin(request):
     if request.user.is_authenticated:
