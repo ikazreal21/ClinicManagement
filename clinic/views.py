@@ -6,7 +6,7 @@ from dataclasses import is_dataclass
 from multiprocessing import context
 from operator import inv
 import re
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
@@ -32,7 +32,13 @@ from .utils import *
 
 @login_required(login_url='login')
 def Home(request):
-    
+    if request.user.is_authenticated:
+        if request.user.is_patient:
+            return redirect('patientdashboard')
+        elif request.user.is_doctor:
+            return redirect('doctorhome')
+        elif request.user.is_staff and not request.user.is_superuser:
+            return redirect('staffhome')
     patients = Patient.objects.all()
 
     return render(request, 'clinic/home.html', {'patients': patients})
@@ -201,6 +207,15 @@ def CompleteAppointment(request, pk):
 @login_required(login_url='login')
 def Calendar(request):
     appointments = Appointment.objects.filter(status="Approved").order_by('datetime')
+
+    for appointment in appointments:
+        procedures_list = [proc.strip().strip("'") for proc in appointment.procedures.strip('[]').split(',')]
+        structured_procedures = []
+        for procedure in procedures_list:
+            parts = procedure.rsplit(' - ', 1)
+            structured_procedures.append((parts[0], parts[1] if len(parts) > 1 else 'Unknown'))
+        appointment.procedures = structured_procedures  # Update the procedures attribute
+
     context = {'appointments': appointments}
     return render(request, 'clinic/calendar.html', context)
 
@@ -338,11 +353,14 @@ def CancelAppointment(request, pk):
 @login_required(login_url='patient_login')
 def PatientAddAppointment(request):
     patient = Patient.objects.get(user=request.user)
-    procedures = Procedures.objects.all()
+    
+    # Separate procedures for doctors and staff
+    doctor_procedures = Procedures.objects.filter(category='doctor')
+    staff_procedures = Procedures.objects.filter(category='staff')
+    
     philippines_now = timezone.localtime(timezone.now())
     date_today = date.today()
     date_today_edited = philippines_now.strftime('%Y-%m-%d')
-    
 
     if patient.is_first_time:
         return redirect('patient_profile')
@@ -356,6 +374,7 @@ def PatientAddAppointment(request):
         procedures = str(selects_list)
         datetime_str = f"{dates} {time}"
         print(datetime_str)
+
         if form.is_valid():
             # Create datetime object from date and time
             appointment_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M')
@@ -372,14 +391,23 @@ def PatientAddAppointment(request):
                 messages.error(request, 'Next available appointment time is outside of clinic operating hours.')
                 return redirect('patient_appointment_form')
             
-
-            form.save(commit=False).datetime = next_appointment_time
-            form.save(commit=False).status = "Pending"
-            form.save(commit=False).patient = patient
-            form.save(commit=False).procedures = procedures
-            form.save()
+            # Save the appointment
+            appointment = form.save(commit=False)
+            appointment.datetime = next_appointment_time
+            appointment.status = "Pending"
+            appointment.patient = patient
+            appointment.procedures = procedures
+            appointment.save()
+            
             return redirect('patientdashboard')
-    return render(request, 'patient/addappointment.html', {'procedures': procedures, 'today_date': date_today_edited, 'notif': notif(patient)})
+
+    context = {
+        'doctor_procedures': doctor_procedures,
+        'staff_procedures': staff_procedures,
+        'today_date': date_today_edited,
+        'notif': notif(patient)
+    }
+    return render(request, 'patient/addappointment.html', context)
 
 @login_required(login_url='patient_login')
 def PatientNotif(request):
@@ -431,7 +459,12 @@ def Services(request):
 
 def PatientLogin(request):
     if request.user.is_authenticated:
-        return redirect('patientdashboard')
+        if request.user.is_patient:
+            return redirect('patientdashboard')
+        elif request.user.is_doctor:
+            return redirect('doctorhome')
+        elif request.user.is_staff and not request.user.is_superuser:
+            return redirect('staffhome')
     else:
         if request.method == 'POST':
             username = request.POST.get('username')
@@ -439,7 +472,12 @@ def PatientLogin(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('patientdashboard')
+                if user.is_patient:
+                    return redirect('patientdashboard')
+                elif user.is_doctor:
+                    return redirect('doctorhome')
+                elif user.is_staff and not user.is_superuser:
+                    return redirect('staffhome')
             else:
                 messages.error(request, 'Username OR password is incorrect')
     return render(request, 'patient/login.html')
@@ -489,6 +527,157 @@ def AssetLink(request):
 
 
 def DoctorHome(request):
-    appointments = Appointment.objects.filter(status="Approved").order_by('datetime')
+    appointments = Appointment.objects.filter(status="Approved", procedures__icontains='(Doctor)').order_by('datetime')
+
+    for appointment in appointments:
+        procedures_list = [proc.strip().strip("'") for proc in appointment.procedures.strip('[]').split(',')]
+        structured_procedures = []
+        for procedure in procedures_list:
+            parts = procedure.rsplit(' - ', 1)
+            structured_procedures.append((parts[0], parts[1] if len(parts) > 1 else 'Unknown'))
+        appointment.procedures = structured_procedures  # Update the procedures attribute
+
     context = {'appointments': appointments}
-    return render(request, 'doctor/calendar.html')
+    return render(request, 'doctor/calendar.html', context)
+
+def DoctorAppointments(request):
+    appointments = Appointment.objects.filter(status='Approved', procedures__icontains='(Doctor)').order_by('datetime')
+    context = {'appointments': appointments}
+    return render(request, 'doctor/appointments.html', context)
+
+def ViewDoctorAppointment(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+
+    # Convert procedures field to a structured format
+    procedures_list = [proc.strip() for proc in appointment.procedures.strip('[]').split(',')]
+    
+    structured_procedures = []
+    for procedure in procedures_list:
+        procedure = procedure.strip().strip("'")
+        if ' - ' in procedure:
+            proc_name, proc_status = procedure.rsplit(' - ', 1)
+        else:
+            proc_name, proc_status = procedure, 'Pending'  # Default status
+        structured_procedures.append((proc_name.strip(), proc_status.strip()))
+
+    if request.method == 'POST':
+        updated_procedures = []
+        for idx, procedure in enumerate(structured_procedures):
+            status_key = f'procedure_status_{idx + 1}'
+            proc_name, _ = procedure  # Unpacking
+            if status_key in request.POST:
+                new_status = request.POST[status_key]
+                updated_procedure = f'{proc_name} - {new_status}'
+                updated_procedures.append(updated_procedure)
+
+        # Save the updated procedures back to the appointment
+        appointment.procedures = str(updated_procedures)
+        appointment.save()
+        
+        messages.success(request, "Procedures updated successfully.")
+        return redirect('view_doctor_appointment', pk=appointment.id)
+    
+    print(structured_procedures)
+
+    return render(request, 'doctor/viewappointment.html', {
+        'appointment': appointment,
+        'procedures': structured_procedures,
+        'profile': appointment.patient,
+    })
+
+def DoctorAppointmentHistory(request):
+    appointments = Appointment.objects.filter(status='Completed', procedures__icontains='(Doctor)').order_by('datetime')
+    context = {'appointments': appointments}
+    return render(request, 'doctor/appointment_history.html', context)
+
+def CompleteDoctorAppointment(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    appointment.status = 'Completed'
+    appointment.save()
+    messages.success(request, 'Appointment marked as completed.')
+    PatientNotification.objects.create(
+        patient=appointment.patient,
+        appointment_id=appointment.id,
+        title='Appointment Completed',
+        message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Completed.'
+    )
+    return redirect('doctor_appointments')
+
+# Staff
+def StaffHome(request):
+    appointments = Appointment.objects.filter(status="Approved", procedures__icontains='(Staff)').order_by('datetime')
+
+    for appointment in appointments:
+        procedures_list = [proc.strip().strip("'") for proc in appointment.procedures.strip('[]').split(',')]
+        structured_procedures = []
+        for procedure in procedures_list:
+            parts = procedure.rsplit(' - ', 1)
+            structured_procedures.append((parts[0], parts[1] if len(parts) > 1 else 'Unknown'))
+        appointment.procedures = structured_procedures  # Update the procedures attribute
+
+    context = {'appointments': appointments}
+    return render(request, 'staff/calendar.html', context)
+
+def StaffAppointments(request):
+    appointments = Appointment.objects.filter(status='Approved', procedures__icontains='(Staff)').order_by('datetime')
+    context = {'appointments': appointments}
+    return render(request, 'staff/appointments.html', context)
+
+
+def ViewStaffAppointment(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+
+    # Convert procedures field to a structured format
+    procedures_list = [proc.strip() for proc in appointment.procedures.strip('[]').split(',')]
+    
+    structured_procedures = []
+    for procedure in procedures_list:
+        procedure = procedure.strip().strip("'")
+        if ' - ' in procedure:
+            proc_name, proc_status = procedure.rsplit(' - ', 1)
+        else:
+            proc_name, proc_status = procedure, 'Pending'  # Default status
+        structured_procedures.append((proc_name.strip(), proc_status.strip()))
+
+    if request.method == 'POST':
+        updated_procedures = []
+        for idx, procedure in enumerate(structured_procedures):
+            status_key = f'procedure_status_{idx + 1}'
+            proc_name, _ = procedure  # Unpacking
+            if status_key in request.POST:
+                new_status = request.POST[status_key]
+                updated_procedure = f'{proc_name} - {new_status}'
+                updated_procedures.append(updated_procedure)
+
+        # Save the updated procedures back to the appointment
+        appointment.procedures = str(updated_procedures)
+        appointment.save()
+        
+        messages.success(request, "Procedures updated successfully.")
+        return redirect('view_doctor_appointment', pk=appointment.id)
+    
+    print(structured_procedures)
+
+    return render(request, 'staff/viewappointment.html', {
+        'appointment': appointment,
+        'procedures': structured_procedures,
+        'profile': appointment.patient,
+    })
+
+def StaffAppointmentHistory(request):
+    appointments = Appointment.objects.filter(status='Completed', procedures__icontains='(Staff)').order_by('datetime')
+    context = {'appointments': appointments}
+    return render(request, 'staff/appointment_history.html', context)
+
+def CompleteStaffAppointment(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    appointment.status = 'Completed'
+    appointment.save()
+    messages.success(request, 'Appointment marked as completed.')
+    PatientNotification.objects.create(
+        patient=appointment.patient,
+        appointment_id=appointment.id,
+        title='Appointment Completed',
+        message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Completed.'
+    )
+    return redirect('staff_appointments')

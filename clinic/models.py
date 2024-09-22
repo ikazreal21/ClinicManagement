@@ -12,6 +12,7 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     is_patient = models.BooleanField(default=False)
+    is_doctor = models.BooleanField(default=False)
 
 class Patient(models.Model):
     GENDER = (
@@ -146,13 +147,13 @@ class PatientNotification(models.Model):
 
 class Procedures(models.Model):
     CATEGORY = (
-        ("1", "Laboratory"),
-        ("2", "General Doctor"),
+        ('doctor', 'Doctor'),
+        ('staff', 'Staff'),
     )
 
 
     name = models.CharField(max_length=255, null=True, blank=True)
-    category = models.CharField(max_length=1, choices=CATEGORY, null=True, blank=True)
+    category = models.CharField(max_length=50, choices=CATEGORY, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Procedure'

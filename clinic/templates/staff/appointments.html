@@ -1,0 +1,64 @@
+{% extends 'staff/base.html' %} 
+
+{% block content %} 
+
+<div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Appointments</h4>
+            <!-- <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'addappointment' %}">
+              <i class="mdi mdi-briefcase-check"></i>Create Appointment
+            </a> -->
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Appointment Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in appointments %}
+                  <tr>
+                    {% if i.patient %}
+                      <td>{{i.patient.first_name | title }} {{i.patient.last_name | title }}</td>
+                    {% else %}
+                      <td>No Account - {{i.patient_name | title }}</td>
+                    {% endif %}
+                    <td>{{i.date}}</td>
+                    <td>
+                      {% if i.status == 'Pending' %}
+                      <label class="badge badge-info">Pending</label>
+                      {% elif i.status == 'Completed' %}
+                      <label class="badge badge-success">Completed</label>
+                      {% elif i.status == 'Cancelled' %}
+                        <label class="badge badge-danger">Cancelled</label>
+                      {% elif i.status == 'Declined' %}
+                      <label class="badge badge-danger">Declined</label>
+                    {% else %}
+                      <label class="badge badge-warning">In progress</label>
+                      {% endif %}
+                    </td>
+                    <td class="text-danger"> 
+                      <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'view_doctor_appointment' i.id %}">
+                        <i class="mdi mdi-briefcase-check"></i>View
+                      </a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="4" class="text-center">No appointments available for doctors.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+{% endblock %}

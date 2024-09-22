@@ -40,6 +40,27 @@ urlpatterns = [
     path("patient_appointment_form/", views.PatientAddAppointment, name="patient_appointment_form"),
     path("cancel_appointment/<str:pk>/", views.CancelAppointment, name="cancel_appointment"),
 
+    ######################
+    # Doctor
+    ######################
+    path("doctorhome/", views.DoctorHome, name="doctorhome"),
+    path("doctors_appointments/", views.DoctorAppointments, name="doctors_appointments"),
+    path("view_doctor_appointment/<str:pk>/", views.ViewDoctorAppointment, 
+    name="view_doctor_appointment"),
+    path("appoinment_history/", views.DoctorAppointmentHistory, name="appoinment_history"),
+    path("complete_doctor_appointment/<str:pk>/", views.CompleteDoctorAppointment, name="complete_doctor_appointment"),
+
+
+    ######################
+    # Staff
+    ######################
+    path("staffhome/", views.StaffHome, name="staffhome"),
+    path("staff_appointments/", views.StaffAppointments, name="staff_appointments"),
+    path("view_staff_appointment/<str:pk>/", views.ViewStaffAppointment, 
+    name="view_staff_appointment"),
+    path("staff_appointment_history/", views.StaffAppointmentHistory, name="staff_appointment_history"),
+    path("complete_staff_appointment/<str:pk>/", views.CompleteStaffAppointment, name="complete_doctor_appointment"),
+
     # terms and conditions
     path("terms/", views.Terms, name="terms"),
 

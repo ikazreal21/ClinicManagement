@@ -1,4 +1,4 @@
-{% extends 'clinic/base.html' %} 
+{% extends 'doctor/base.html' %} 
 
 {% block content %} 
 <div class="row">
@@ -25,7 +25,7 @@
                         <div class="ei_Dot dot_active"></div>
                         <div class="ei_Title">
                             <span>{{ i.date }} &emsp;
-                                <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'viewappointment' i.id %}">
+                                <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'view_doctor_appointment' i.id %}">
                                     <i class="mdi mdi-briefcase-check"></i> View
                                 </a>
                             </span>

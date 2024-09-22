@@ -11,10 +11,10 @@ class UserAdminConfig(UserAdmin):
     model = CustomUser
     search_fields = ('username', 'email')
     list_filter = ('first_name', 'is_active', 'is_staff', 'is_patient')
-    list_display = ('username', 'id', 'email','is_active', 'is_staff', 'is_patient')
+    list_display = ('username', 'id', 'email','is_active', 'is_staff', 'is_patient', 'is_doctor')
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_patient')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_patient', 'is_doctor')}),
     )
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 60})}
@@ -32,6 +32,7 @@ class UserAdminConfig(UserAdmin):
                     'is_active',
                     'is_staff',
                     'is_patient',
+                    'is_doctor'
                 ),
             },
         ),

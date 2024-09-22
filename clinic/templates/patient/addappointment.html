@@ -8,14 +8,14 @@
         {% if messages %}
             {% for message in messages %}
             {% if message.tags == 'error' %}
-                <div class="alert alert-danger alert-left-bordered border-danger alert-dismissible d-flex align-items-center p-md-4 mb-2 fade show" 		role="alert">
+                <div class="alert alert-danger alert-left-bordered border-danger alert-dismissible d-flex align-items-center p-md-4 mb-2 fade show" role="alert">
                     <i class="gd-flag-alt-2 icon-text text-warning mr-2"></i>
                     <p class="mb-0">
                         <strong>{{ message }}</strong> 
                     </p>
                 </div>
-            {% else %}
-                <div class="alert alert-success alert-left-bordered border-success alert-dismissible d-flex align-items-center p-md-4 mb-2 fade show" 		role="alert">
+            {% else %}  
+                <div class="alert alert-success alert-left-bordered border-success alert-dismissible d-flex align-items-center p-md-4 mb-2 fade show" role="alert">
                     <i class="gd-flag-alt-2 icon-text text-warning mr-2"></i>
                     <p class="mb-0">
                         <strong>{{ message }}</strong> 
@@ -30,16 +30,18 @@
             {% csrf_token %}
             <div class="form-group">
               <label for="exampleInputUsername1">Patient Name</label>
-              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Name" name="patient_name">
+              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Name" name="patient_name" required>
             </div>
             <input type="hidden" name="selects" id="selects">
+            
+            <!-- Container for procedure selection -->
             <div class="containers">
-                <h5>Procedures</h5>
-                <div id="select-container">
+                <h5>Doctor Procedures</h5>
+                <div id="doctor-select-container">
                     <div class="select-wrapper form-group">
                         <div class="input-group">
                             <select class="form-control">
-                                {% for procedure in procedures %}
+                                {% for procedure in doctor_procedures %}
                                 <option value="{{procedure.name}}">{{procedure.name}}</option>
                                 {% endfor %}
                             </select>
@@ -47,12 +49,27 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-secondary me-2" id="add-btn">Add Select</button>
+                <button type="button" class="btn btn-secondary me-2" id="add-doctor-btn">Add Doctor Procedure</button>
+
+                <h5>Staff Procedures</h5>
+                <div id="staff-select-container">
+                    <div class="select-wrapper form-group">
+                        <div class="input-group">
+                            <select class="form-control">
+                                {% for procedure in staff_procedures %}
+                                <option value="{{procedure.name}}">{{procedure.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-warning me-2 remove-btn" type="button" onclick="removeSelect(this)">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary me-2" id="add-staff-btn">Add Staff Procedure</button>
             </div>
+
             <div class="form-group">
-                
               <label for="exampleInputPassword1">Date</label>
-              <input type="date"  class="form-control" id="exampleInputPassword1" name="date" min="{{ today_date }}" required>
+              <input type="date" class="form-control" id="exampleInputPassword1" name="date" min="{{ today_date }}" required>
             </div>
             <div class="form-group">
               <label for="exampleInputConfirmPassword1">Time</label>
@@ -65,20 +82,28 @@
       </div>
     </div>
 </div>
+
 <script>
-    document.getElementById('add-btn').addEventListener('click', function() {
-        addSelect();
+    // Event listeners for adding selects
+    document.getElementById('add-doctor-btn').addEventListener('click', function() {
+        addSelect('doctor-select-container');
     });
 
+    document.getElementById('add-staff-btn').addEventListener('click', function() {
+        addSelect('staff-select-container');
+    });
+
+    // Form submit event to collect selected values
     document.getElementById('select-form').addEventListener('submit', function(event) {
         collectSelectValues();
     });
 
-    function addSelect() {
-        const selectContainer = document.getElementById('select-container');
+    // Add a new select input to the specified container
+    function addSelect(containerId) {
+        const selectContainer = document.getElementById(containerId);
         
-        // Clone the first select-wrapper element
-        const originalSelectWrapper = document.querySelector('.select-wrapper');
+        // Clone the first select-wrapper element in the specified container
+        const originalSelectWrapper = selectContainer.querySelector('.select-wrapper');
         const newSelectWrapper = originalSelectWrapper.cloneNode(true);
         
         // Add event listener to the new remove button
@@ -90,29 +115,36 @@
         selectContainer.appendChild(newSelectWrapper);
     }
 
+    // Remove a select input from the form
     function removeSelect(button) {
-        const selectWrapper = button.parentElement;
+        const selectWrapper = button.closest('.select-wrapper');
         
-        // Ensure the first select-wrapper is not removed
-        if (selectWrapper === document.querySelector('.input-group:first-child')) {
-            return;
+        // Ensure at least one select-wrapper remains in the container
+        const container = selectWrapper.parentElement;
+        if (container.children.length > 1) {
+            selectWrapper.remove();
         }
-        
-        selectWrapper.remove();
     }
 
+    // Collect the selected values from all select inputs and set the hidden input's value
     function collectSelectValues() {
-        const selectElements = document.querySelectorAll('#select-container select');
         let selectValues = [];
 
-        selectElements.forEach(select => {
-            selectValues.push(select.value);
+        // Collect values from both doctor and staff containers
+        const doctorSelectElements = document.querySelectorAll('#doctor-select-container select');
+        const staffSelectElements = document.querySelectorAll('#staff-select-container select');
+
+        doctorSelectElements.forEach(select => {
+            selectValues.push(select.value + ' (Doctor)');
+        });
+
+        staffSelectElements.forEach(select => {
+            selectValues.push(select.value + ' (Staff)');
         });
 
         const selectsInput = document.querySelector('input[name="selects"]');
         selectsInput.value = selectValues.join(',');
     }
-
 </script>
 
 {% endblock %}
