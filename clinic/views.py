@@ -512,16 +512,7 @@ def Terms(request):
     return render(request, 'patient/terms.html')
 
 def AssetLink(request):
-    assetlink = [
-        {
-            "relation": ["delegate_permission/common.handle_all_urls"],
-            "target": {
-            "namespace": "android_app",
-            "package_name": "xyz.appmaker.dyblcl",
-            "sha256_cert_fingerprints": ["E5:21:8D:A3:2E:01:95:A6:ED:86:69:57:7F:21:1A:61:F1:B7:49:4C:BE:38:89:99:84:33:F2:69:7E:38:37:E2"]
-            }
-        }
-    ]
+    assetlink = [ { "relation": ["delegate_permission/common.handle_all_urls"], "target": { "namespace": "android_app", "package_name": "xyz.appmaker.tnzpgl", "sha256_cert_fingerprints": ["6F:B0:09:F5:63:5C:3A:37:AA:E0:1B:BD:F1:A6:39:1C:61:2D:7B:F4:99:70:C3:79:BC:FB:C9:B6:2E:C9:3A:46"] } } ]
 
     return JsonResponse(assetlink, safe=False)
 
