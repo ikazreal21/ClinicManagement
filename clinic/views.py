@@ -366,7 +366,7 @@ def PatientAppointment(request):
     patient = Patient.objects.get(user=request.user)
     if patient.is_first_time:
         return redirect('patient_profile')
-    appointments = Appointment.objects.filter(patient=patient).filter(Q(status="Approved") | Q(status="Pending")).order_by('datetime')
+    appointments = Appointment.objects.filter(patient=patient).filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance")).order_by('datetime')
     context = {'appointments': appointments, 'notif': notif(patient)}
     return render(request, 'patient/appointment.html', context)
 
@@ -480,7 +480,7 @@ def PatientRecords(request):
     patient = Patient.objects.get(user=request.user)
     if patient.is_first_time:
         return redirect('patient_profile')
-    records = Appointment.objects.filter(patient=patient).filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined')).order_by('datetime')
+    records = Appointment.objects.filter(patient=patient).filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance')).order_by('datetime')
     context = {'appointments': records}
     return render(request, 'patient/appointment_history.html', context)
 
@@ -548,12 +548,21 @@ def Terms(request):
     return render(request, 'patient/terms.html')
 
 def AssetLink(request):
-    assetlink = [ { "relation": ["delegate_permission/common.handle_all_urls"], "target": { "namespace": "android_app", "package_name": "xyz.appmaker.tnzpgl", "sha256_cert_fingerprints": ["6F:B0:09:F5:63:5C:3A:37:AA:E0:1B:BD:F1:A6:39:1C:61:2D:7B:F4:99:70:C3:79:BC:FB:C9:B6:2E:C9:3A:46"] } } ]
+    assetlink = [
+        {
+            "relation": ["delegate_permission/common.handle_all_urls"],
+            "target": {
+            "namespace": "android_app",
+            "package_name": "xyz.appmaker.lxumxm",
+            "sha256_cert_fingerprints": ["9B:A3:6C:DB:22:09:16:B5:0B:9E:C5:5F:A7:B5:EF:2F:8A:8B:14:3C:5F:0D:87:45:A7:E7:2B:DD:4C:E7:68:DF"]
+            }
+        }
+    ]
     return JsonResponse(assetlink, safe=False)
 
 
 def DoctorHome(request):
-    appointments = Appointment.objects.filter(status="Approved", procedures__icontains='(Doctor)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Confirm Appearance"), procedures__icontains='(Doctor)').order_by('datetime')
 
     for appointment in appointments:
         procedures_list = [proc.strip().strip("'") for proc in appointment.procedures.strip('[]').split(',')]
@@ -567,7 +576,7 @@ def DoctorHome(request):
     return render(request, 'doctor/calendar.html', context)
 
 def DoctorAppointments(request):
-    appointments = Appointment.objects.filter(status='Approved', procedures__icontains='(Doctor)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), procedures__icontains='(Doctor)').order_by('datetime')
     context = {'appointments': appointments}
     return render(request, 'doctor/appointments.html', context)
 
@@ -612,7 +621,7 @@ def ViewDoctorAppointment(request, pk):
     })
 
 def DoctorAppointmentHistory(request):
-    appointments = Appointment.objects.filter(status='Completed', procedures__icontains='(Doctor)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), procedures__icontains='(Doctor)').order_by('datetime')
     context = {'appointments': appointments}
     return render(request, 'doctor/appointment_history.html', context)
 
@@ -631,7 +640,7 @@ def CompleteDoctorAppointment(request, pk):
 
 # Staff
 def StaffHome(request):
-    appointments = Appointment.objects.filter(status="Approved", procedures__icontains='(Staff)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Confirm Appearance"), procedures__icontains='(Staff)').order_by('datetime')
 
     for appointment in appointments:
         procedures_list = [proc.strip().strip("'") for proc in appointment.procedures.strip('[]').split(',')]
@@ -645,7 +654,7 @@ def StaffHome(request):
     return render(request, 'staff/calendar.html', context)
 
 def StaffAppointments(request):
-    appointments = Appointment.objects.filter(status='Approved', procedures__icontains='(Staff)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), procedures__icontains='(Staff)').order_by('datetime')
     context = {'appointments': appointments}
     return render(request, 'staff/appointments.html', context)
 
@@ -691,7 +700,7 @@ def ViewStaffAppointment(request, pk):
     })
 
 def StaffAppointmentHistory(request):
-    appointments = Appointment.objects.filter(status='Completed', procedures__icontains='(Staff)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), procedures__icontains='(Staff)').order_by('datetime')
     context = {'appointments': appointments}
     return render(request, 'staff/appointment_history.html', context)
 
