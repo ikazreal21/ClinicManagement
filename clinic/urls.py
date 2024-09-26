@@ -8,6 +8,7 @@ from pwa.views import manifest, service_worker, offline
 
 
 urlpatterns = [
+    path("", views.Landing, name="landing"),
     path("home/", views.Home, name="home"),
     path("patientdetails/<str:pk>/", views.PatientDetails, name="patientdetails"),
     path("appointments/", views.AppointmentPage, name="appointments"),

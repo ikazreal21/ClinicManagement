@@ -273,7 +273,7 @@ def Login(request):
 
 def Logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('landing')
 
 
 ###################
@@ -717,3 +717,7 @@ def SendEmail(request, pk):
     full_name = appointment.first_name + ' ' + appointment.last_name
     send_results_ready_email(appointment.email, full_name, appointment.date())
     return redirect('viewappointment', pk=appointment.id)
+
+
+def Landing(request):
+    return render(request, 'clinic/landing.html')
