@@ -18,6 +18,10 @@ urlpatterns = [
     path("calendar/", views.Calendar, name="calendar"),
     path("declineappointment/<str:pk>/", views.DeclineAppointment, name="declineappointment"),
 
+    ######################
+    path("confirmappearance/<str:pk>/", views.ConfirmAppearance, name="confirmappearance"),
+    path("noappearance/<str:pk>/", views.NoAppearance, name="noappearance"),
+
     # Auth
     path("login/", views.Login, name="login"),
     path("logout/", views.Logout, name="logout"),
@@ -60,6 +64,8 @@ urlpatterns = [
     name="view_staff_appointment"),
     path("staff_appointment_history/", views.StaffAppointmentHistory, name="staff_appointment_history"),
     path("complete_staff_appointment/<str:pk>/", views.CompleteStaffAppointment, name="complete_doctor_appointment"),
+
+    path("send_email/<str:pk>/", views.SendEmail, name="send_email"),
 
     # terms and conditions
     path("terms/", views.Terms, name="terms"),

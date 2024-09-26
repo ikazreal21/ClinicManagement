@@ -45,8 +45,8 @@
             <h4>Specialization: {{appointment.specialization | title}}</h4>
             <h4>Status: {{appointment.status | title}}</h4>
         </div>
-        <hr>
-        {% if appointment.status == 'Pending' %}
+        <!-- <hr> -->
+        <!-- {% if appointment.status == 'Pending' %}
             <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}">
                 <i class="mdi mdi-bulletin-board"></i>Approve
             </a>
@@ -57,7 +57,7 @@
             <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'complete_doctor_appointment' appointment.id %}">
                 <i class="mdi mdi-check"></i>Complete
             </a>
-        {% endif %}
+        {% endif %} -->
     </div>
 </div>
 

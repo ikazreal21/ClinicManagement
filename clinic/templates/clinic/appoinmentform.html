@@ -7,7 +7,7 @@
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Walk in Appointment Form</h4>
-          <form class="forms-sample" method="post">
+          <form class="forms-sample" id="select-form" method="post">
             {% csrf_token %}
             <!-- <div class="form-group">
               <label for="exampleInputUsername1">Patient Name</label>
@@ -37,9 +37,27 @@
               <label for="exampleInputUsername1">Staff Name</label>
               <input type="text" class="form-control" id="exampleInputUsername1" name="staff_name">
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="exampleInputUsername1">Procedure</label>
               <input type="text" class="form-control" id="exampleInputUsername1" name="procedures">
+            </div>
+             -->
+            <input type="hidden" name="selects" id="selects">
+            <div class="containers">
+                <h5>Staff Procedures</h5>
+                <div id="staff-select-container">
+                    <div class="select-wrapper form-group">
+                        <div class="input-group">
+                            <select class="form-control">
+                                {% for procedure in staff_procedures %}
+                                <option value="{{procedure.name}}">{{procedure.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-warning me-2 remove-btn" type="button" onclick="removeSelect(this)">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary me-2" id="add-staff-btn">Add Staff Procedure</button>
             </div>
             <div class="form-group">
               <label for="exampleInputUsername1">Notes</label>
@@ -60,6 +78,62 @@
       </div>
     </div>
 </div>
+
+
+<script>
+
+  document.getElementById('add-staff-btn').addEventListener('click', function() {
+      addSelect('staff-select-container');
+  });
+
+  // Form submit event to collect selected values
+  document.getElementById('select-form').addEventListener('submit', function(event) {
+      collectSelectValues();
+  });
+
+  // Add a new select input to the specified container
+  function addSelect(containerId) {
+      const selectContainer = document.getElementById(containerId);
+      
+      // Clone the first select-wrapper element in the specified container
+      const originalSelectWrapper = selectContainer.querySelector('.select-wrapper');
+      const newSelectWrapper = originalSelectWrapper.cloneNode(true);
+      
+      // Add event listener to the new remove button
+      const newRemoveButton = newSelectWrapper.querySelector('.remove-btn');
+      newRemoveButton.onclick = function() {
+          removeSelect(newRemoveButton);
+      };
+      
+      selectContainer.appendChild(newSelectWrapper);
+  }
+
+  // Remove a select input from the form
+  function removeSelect(button) {
+      const selectWrapper = button.closest('.select-wrapper');
+      
+      // Ensure at least one select-wrapper remains in the container
+      const container = selectWrapper.parentElement;
+      if (container.children.length > 1) {
+          selectWrapper.remove();
+      }
+  }
+
+  // Collect the selected values from all select inputs and set the hidden input's value
+  function collectSelectValues() {
+      let selectValues = [];
+
+      // Collect values from both doctor and staff containers
+      const staffSelectElements = document.querySelectorAll('#staff-select-container select');
+
+      staffSelectElements.forEach(select => {
+          selectValues.push(select.value + ' (Staff)');
+      });
+
+      const selectsInput = document.querySelector('input[name="selects"]');
+      selectsInput.value = selectValues.join(',');
+  }
+</script>
 
 
 {% endblock %}

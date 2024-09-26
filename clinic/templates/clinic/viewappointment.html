@@ -38,14 +38,29 @@
             <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}"><i class="mdi mdi-bulletin-board">
             </i>Approve
             </a>
-            <!-- Trigger the modal with this button -->
             <button type="button" class="btn btn-danger btn-lg text-white mb-0 me-0" onclick="showDeclineModal()">
                 <i class="mdi mdi-close-box"></i>Decline
             </button>
         {% elif appointment.status == 'Approved' %}
+            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'confirmappearance' appointment.id %}"><i class="mdi mdi-check">
+            </i>Confirm Appearance
+            </a>/
+            <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'noappearance' appointment.id %}"><i class="mdi mdi-close">
+            </i>No Appearance
+            </a>
+            <!-- <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'completeappointment' appointment.id %}"><i class="mdi mdi-check">
+            </i>Complete
+            </a> -->
+        {% elif appointment.status == 'Confirm Appearance' %}
             <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'completeappointment' appointment.id %}"><i class="mdi mdi-check">
             </i>Complete
             </a>
+        {% elif appointment.status == 'Completed' %}
+            {% if not appointment.patient %}
+                <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'send_email' appointment.id %}"><i class="mdi mdi-check">
+                </i>Results is Ready for Pickup
+                </a>
+            {% endif %}
         {% endif %}
     </div>
 </div>

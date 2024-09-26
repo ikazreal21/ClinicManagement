@@ -128,14 +128,21 @@ def ViewAppointment(request, pk):
 
 @login_required(login_url='login')
 def AddAppointment(request):
+    staff_procedures = Procedures.objects.filter(category='staff')
     if request.method == 'POST':
-        procedures_appointment = [f'{request.POST.get("procedures")}']
+        selects_data = request.POST.get('selects', '')
+        print("Selects: ", selects_data)
+        selects_list = selects_data.split(',') if selects_data else []
+        procedures = str(selects_list)
+        
+        print("Procedures: ", procedures)
+
         form = AppointmentForm(request.POST)
         time = request.POST.get('time')
         date = request.POST.get('date')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        procedures = str(procedures_appointment)
+
         datetime_str = f"{date} {time}"
         patient_name = f"{first_name} {last_name}"
         print(form.errors)
@@ -146,7 +153,7 @@ def AddAppointment(request):
             form.save(commit=False).procedures = procedures
             form.save()
             return redirect('appointments')
-    context = {'form': AppointmentForm()}
+    context = {'form': AppointmentForm(), 'staff_procedures': staff_procedures}
     return render(request, 'clinic/appoinmentform.html', context)
 
 @login_required(login_url='login')
@@ -159,6 +166,32 @@ def ApproveAppointment(request, pk):
         appointment_id=appointment.id,
         title='Appointment Approved',
         message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Approved.'
+    )
+    return redirect('appointments')
+
+@login_required(login_url='login')
+def ConfirmAppearance(request, pk):
+    appointment = Appointment.objects.get(id=pk)
+    appointment.status = "Confirm Appearance"
+    appointment.save()
+    PatientNotification.objects.create(
+        patient=appointment.patient,
+        appointment_id=appointment.id,
+        title='Confirm Appearance',
+        message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has Confirmed Appearance.'
+    )
+    return redirect('appointments')
+
+@login_required(login_url='login')
+def NoAppearance(request, pk):
+    appointment = Appointment.objects.get(id=pk)
+    appointment.status = "No Appearance"
+    appointment.save()
+    PatientNotification.objects.create(
+        patient=appointment.patient,
+        appointment_id=appointment.id,
+        title='No Appearance',
+        message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has No Appearance.'
     )
     return redirect('appointments')
 
@@ -674,3 +707,13 @@ def CompleteStaffAppointment(request, pk):
         message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Completed.'
     )
     return redirect('staff_appointments')
+
+
+
+def SendEmail(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    appointment.status = "Results Ready"
+    appointment.save()
+    full_name = appointment.first_name + ' ' + appointment.last_name
+    send_results_ready_email(appointment.email, full_name, appointment.date())
+    return redirect('viewappointment', pk=appointment.id)
