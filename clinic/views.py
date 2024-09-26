@@ -1,4 +1,3 @@
-
 from django.template.defaulttags import register
 from calendar import c
 from dataclasses import is_dataclass
@@ -37,8 +36,9 @@ def Home(request):
             return redirect('patientdashboard')
         elif request.user.is_doctor:
             return redirect('doctorhome')
-        elif request.user.is_staff and not request.user.is_superuser:
-            return redirect('staffhome')
+        elif request.user.is_staff:
+            if not request.user.is_superuser:
+                return redirect('staffhome')
     patients = Patient.objects.all()
 
     return render(request, 'clinic/home.html', {'patients': patients})
@@ -231,6 +231,7 @@ def Login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+
                 return redirect('home')
             else:
                 messages.info(request, 'Username OR password is incorrect')
@@ -463,8 +464,9 @@ def PatientLogin(request):
             return redirect('patientdashboard')
         elif request.user.is_doctor:
             return redirect('doctorhome')
-        elif request.user.is_staff and not request.user.is_superuser:
-            return redirect('staffhome')
+        elif request.user.is_staff:
+            if not request.user.is_superuser:
+                return redirect('staffhome')
     else:
         if request.method == 'POST':
             username = request.POST.get('username')
@@ -476,8 +478,9 @@ def PatientLogin(request):
                     return redirect('patientdashboard')
                 elif user.is_doctor:
                     return redirect('doctorhome')
-                elif user.is_staff and not user.is_superuser:
-                    return redirect('staffhome')
+                elif user.is_staff:
+                    if not user.is_superuser:
+                        return redirect('staffhome')
             else:
                 messages.error(request, 'Username OR password is incorrect')
     return render(request, 'patient/login.html')
@@ -512,16 +515,16 @@ def Terms(request):
     return render(request, 'patient/terms.html')
 
 def AssetLink(request):
-    assetlink = [
-        {
-            "relation": ["delegate_permission/common.handle_all_urls"],
-            "target": {
-            "namespace": "android_app",
-            "package_name": "xyz.appmaker.dyblcl",
-            "sha256_cert_fingerprints": ["E5:21:8D:A3:2E:01:95:A6:ED:86:69:57:7F:21:1A:61:F1:B7:49:4C:BE:38:89:99:84:33:F2:69:7E:38:37:E2"]
-            }
-        }
-    ]
+    assetlink = [ { "relation": ["delegate_permission/common.handle_all_urls"], "target": { "namespace": "android_app", "package_name": "xyz.appmaker.tnzpgl", "sha256_cert_fingerprints": ["6F:B0:09:F5:63:5C:3A:37:AA:E0:1B:BD:F1:A6:39:1C:61:2D:7B:F4:99:70:C3:79:BC:FB:C9:B6:2E:C9:3A:46"] } } ]
+        
+
+
+
+          
+           
+
+
+
 
     return JsonResponse(assetlink, safe=False)
 
