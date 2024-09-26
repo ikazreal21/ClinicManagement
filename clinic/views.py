@@ -516,16 +516,6 @@ def Terms(request):
 
 def AssetLink(request):
     assetlink = [ { "relation": ["delegate_permission/common.handle_all_urls"], "target": { "namespace": "android_app", "package_name": "xyz.appmaker.tnzpgl", "sha256_cert_fingerprints": ["6F:B0:09:F5:63:5C:3A:37:AA:E0:1B:BD:F1:A6:39:1C:61:2D:7B:F4:99:70:C3:79:BC:FB:C9:B6:2E:C9:3A:46"] } } ]
-        
-
-
-
-          
-           
-
-
-
-
     return JsonResponse(assetlink, safe=False)
 
 
