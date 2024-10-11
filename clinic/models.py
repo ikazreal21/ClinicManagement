@@ -10,10 +10,19 @@ from django.core.files.storage import FileSystemStorage
 from django.db import models
 
 
+
+def create_rand_id():
+        from django.utils.crypto import get_random_string
+        return get_random_string(length=13, 
+            allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
+
 class CustomUser(AbstractUser):
     is_patient = models.BooleanField(default=False)
     is_doctor = models.BooleanField(default=False)
-
+    is_im = models.BooleanField(default=False)
+    is_ob = models.BooleanField(default=False)
+    is_gd = models.BooleanField(default=False)
+ 
 class Patient(models.Model):
     GENDER = (
         ("M", "Male"),
@@ -40,7 +49,10 @@ class Patient(models.Model):
     patientimage = models.ImageField(upload_to='patientimages/', null=True, blank=True)
     document_id = models.CharField(max_length=255, null=True, blank=True)
 
+    verification_code = models.CharField(max_length=255, null=True, blank=True)
+
     is_first_time = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Patient'
@@ -151,9 +163,17 @@ class Procedures(models.Model):
         ('staff', 'Staff'),
     )
 
+    # convert this into a choice field
+    PROCEDURE_CHOICES = (
+        ('IM', 'Internal Medicine'),
+        ('GD', 'General Doctors'),
+        ('OB', 'Ob-gyn'),
+    )
+        
 
     name = models.CharField(max_length=255, null=True, blank=True)
     category = models.CharField(max_length=50, choices=CATEGORY, null=True, blank=True)
+    doctor_procedure = models.CharField(max_length=50, choices=PROCEDURE_CHOICES, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Procedure'
@@ -161,3 +181,26 @@ class Procedures(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Announcement(models.Model):
+    title = models.CharField(max_length=255, null=True, blank=True)
+    message = models.TextField(null=True, blank=True)
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Announcement'
+        verbose_name_plural = 'Announcements'
+
+    def __str__(self):
+        return self.title
+    
+    def date(self):
+        return self.datetime.strftime('%b %e %Y %I:%M %p')
+    
+
+
+
+class DoctorSchedule(models.Model):
+    doctors_name = models.CharField(max_length=255, null=True, blank=True)
+    

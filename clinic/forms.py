@@ -31,4 +31,4 @@ class PatientForm(ModelForm):
     class Meta:
         model = Patient
         fields = '__all__'
-        exclude = ['user', 'patient_code', 'is_first_time']
+        exclude = ['user', 'patient_code', 'is_first_time', 'verification_code', 'is_verified']

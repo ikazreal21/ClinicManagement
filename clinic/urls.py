@@ -68,6 +68,12 @@ urlpatterns = [
 
     path("send_email/<str:pk>/", views.SendEmail, name="send_email"),
 
+    path("need_verification/", views.NeedVerification, name="need_verification"),
+
+    path("verify_email/<str:verification_code>/", views.VerifyEmail, name="verify_email"),
+
+    path("announcements/", views.Announcements, name="announcements"),
+
     # terms and conditions
     path("terms/", views.Terms, name="terms"),
 

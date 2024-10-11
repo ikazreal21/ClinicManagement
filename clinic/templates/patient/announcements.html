@@ -1,0 +1,29 @@
+{% extends 'patient/base.html' %} 
+
+{% block content %} 
+<!-- <div class="alert alert-primary alert-left-bordered border-primary alert-dismissible d-flex align-items-center p-md-4 mb-2 fade show" role="alert">
+  <i class="gd-flag-alt-2 icon-text text-warning mr-2"></i>
+  <p class="mb-0">
+      <strong>TEST</strong>
+  </p>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div> -->
+<div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <h2 class="card-title">Announcements</h2>
+    </div>
+</div>
+{% for i in announcements %}
+<div class="row">
+  <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title" style="font-size: large;">{{i.title | title}}</h2>
+          <h4>{{i.message}}</h4>
+          <p><strong>{{i.date}}</strong></p>
+        </div>
+      </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

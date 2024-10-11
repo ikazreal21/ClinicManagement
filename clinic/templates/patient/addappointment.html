@@ -42,7 +42,7 @@
                         <div class="input-group">
                             <select class="form-control">
                                 {% for procedure in doctor_procedures %}
-                                <option value="{{procedure.name}}">{{procedure.name}}</option>
+                                <option value="{{procedure.name}} {{procedure.doctor_procedure}}">{{procedure.name}}</option>
                                 {% endfor %}
                             </select>
                             <button class="btn btn-warning me-2 remove-btn" type="button" onclick="removeSelect(this)">Remove</button>

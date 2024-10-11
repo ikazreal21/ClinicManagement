@@ -334,8 +334,12 @@ def PatientHome(request):
     #     if appoinment.procedures:
     #         print(appoinment.procedures)
     #         appoinment.procedures = ast.literal_eval(appoinment.procedures)
-    if patient.is_first_time:
-        return redirect('patient_profile')
+    if patient.is_verified:
+        if patient.is_first_time:
+            return redirect('patient_profile')
+    else:
+        return redirect('need_verification')
+
     
     context = {'appointments': appointments, 'notif': notif(patient)}
     return render(request, 'patient/dashboard.html', context)
@@ -348,7 +352,7 @@ def PatientProfile(request):
         birth_date = patient.date_of_birth.strftime('%d/%m/%Y')
     else:
         birth_date = None
-    print(birth_date)
+    print(patient)
     
     if request.method == 'POST':
         form = PatientForm(request.POST, request.FILES, instance=patient)
@@ -402,6 +406,7 @@ def PatientAddAppointment(request):
     if request.method == 'POST':
         selects_data = request.POST.get('selects', '')
         selects_list = selects_data.split(',') if selects_data else []
+        print(selects_list)
         form = AppointmentFormPatient(request.POST)
         time = request.POST.get('time')
         dates = request.POST.get('date')
@@ -522,6 +527,7 @@ def PatientLogin(request):
 
 def PatientRegister(request):
     if request.method == 'POST':
+        verification_code = create_rand_id()
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save(commit=False).is_patient = True
@@ -530,7 +536,9 @@ def PatientRegister(request):
             Patient.objects.create(
                 user=user,
                 email=email,
+                verification_code=verification_code
             )
+            send_verification_email(email, user, verification_code)
             return redirect('patient_login')
         else:
             messages.error(request, 'An error occured')
@@ -561,27 +569,59 @@ def AssetLink(request):
     return JsonResponse(assetlink, safe=False)
 
 
+@login_required(login_url='patient_login')
 def DoctorHome(request):
-    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Confirm Appearance"), procedures__icontains='(Doctor)').order_by('datetime')
+    if request.user.is_im:
+        appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Confirm Appearance"), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='IM')).order_by('datetime')
+        doctor_speciality = 'IM'
+    elif request.user.is_gd:
+        appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Confirm Appearance"), Q(procedures__icontains='(Doctor)') |  Q(procedures__icontains='GD')).order_by('datetime')
+        doctor_speciality = 'GD'
+    elif request.user.is_ob:
+        appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Confirm Appearance"), Q(procedures__icontains='(Doctor)') |  Q(procedures__icontains='OB')).order_by('datetime')
+        doctor_speciality = 'OB'
+    else:
+        appointments = []
+        doctor_speciality = 'Unknown'
 
     for appointment in appointments:
         procedures_list = [proc.strip().strip("'") for proc in appointment.procedures.strip('[]').split(',')]
         structured_procedures = []
         for procedure in procedures_list:
+            print("procedure", procedure)
             parts = procedure.rsplit(' - ', 1)
-            structured_procedures.append((parts[0], parts[1] if len(parts) > 1 else 'Unknown'))
+            if doctor_speciality in parts[0]:
+                structured_procedures.append((parts[0], parts[1] if len(parts) > 1 else 'Unknown'))
+            print("structured_procedures", structured_procedures)
         appointment.procedures = structured_procedures  # Update the procedures attribute
 
     context = {'appointments': appointments}
     return render(request, 'doctor/calendar.html', context)
 
+@login_required(login_url='patient_login')
 def DoctorAppointments(request):
-    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), procedures__icontains='(Doctor)').order_by('datetime')
+    if request.user.is_im:
+        appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='IM')).order_by('datetime')
+    elif request.user.is_gd:
+        appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='GD')).order_by('datetime')
+    elif request.user.is_ob:
+        appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='OB')).order_by('datetime')
+    else:
+        appointments = []
     context = {'appointments': appointments}
     return render(request, 'doctor/appointments.html', context)
 
 def ViewDoctorAppointment(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
+
+    if request.user.is_im:
+        doctor_speciality = 'IM'
+    elif request.user.is_gd:
+        doctor_speciality = 'GD'
+    elif request.user.is_ob:
+        doctor_speciality = 'OB'
+    else:
+        doctor_speciality = 'Unknown'
 
     # Convert procedures field to a structured format
     procedures_list = [proc.strip() for proc in appointment.procedures.strip('[]').split(',')]
@@ -593,7 +633,9 @@ def ViewDoctorAppointment(request, pk):
             proc_name, proc_status = procedure.rsplit(' - ', 1)
         else:
             proc_name, proc_status = procedure, 'Pending'  # Default status
-        structured_procedures.append((proc_name.strip(), proc_status.strip()))
+        if  doctor_speciality in proc_name: # Default status
+            structured_procedures.append((proc_name.strip(), proc_status.strip()))
+        # structured_procedures.append((proc_name.strip(), proc_status.strip()))
 
     if request.method == 'POST':
         updated_procedures = []
@@ -620,11 +662,20 @@ def ViewDoctorAppointment(request, pk):
         'profile': appointment.patient,
     })
 
+@login_required(login_url='patient_login')
 def DoctorAppointmentHistory(request):
-    appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), procedures__icontains='(Doctor)').order_by('datetime')
+    if request.user.is_im:
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), Q(procedures__icontains='(Doctor)') & Q(procedures__icontains='IM')).order_by('datetime')
+    elif request.user.is_gd: 
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='GD')).order_by('datetime')
+    elif request.user.is_ob:
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='OB')).order_by('datetime')
+    else:
+        appointments = []
     context = {'appointments': appointments}
     return render(request, 'doctor/appointment_history.html', context)
 
+@login_required(login_url='patient_login')
 def CompleteDoctorAppointment(request, pk):
     appointment = get_object_or_404(Appointment, id=pk)
     appointment.status = 'Completed'
@@ -664,7 +715,7 @@ def ViewStaffAppointment(request, pk):
 
     # Convert procedures field to a structured format
     procedures_list = [proc.strip() for proc in appointment.procedures.strip('[]').split(',')]
-    
+    print(procedures_list)
     structured_procedures = []
     for procedure in procedures_list:
         procedure = procedure.strip().strip("'")
@@ -728,5 +779,28 @@ def SendEmail(request, pk):
     return redirect('viewappointment', pk=appointment.id)
 
 
+def VerifyEmail(request, verification_code):
+    patient = Patient.objects.get(verification_code=verification_code)
+    patient.is_verified = True
+    patient.save()
+    return render(request, 'patient/verified.html')
+
+def send_verification_email(email, user, verification_code):
+    subject = 'Email Verification'
+    message = f'Hi {user.username},\n\nPlease click the link below to verify your email address:\n\nhttps://ashermd.ellequin.com/verify_email/{verification_code}'
+    send_email(subject, message, [email])
+
 def Landing(request):
-    return render(request, 'clinic/landing.html')
+    services = Procedures.objects.all()[0:3]
+    context = {'services': services}
+    print(services)
+    return render(request, 'clinic/landing.html', context)
+
+def NeedVerification(request):
+    logout(request)
+    return render(request, 'patient/need_verification.html')
+
+def Announcements(request):
+    announcements = Announcement.objects.all()
+    context = {'announcements': announcements}
+    return render(request, 'patient/announcements.html', context)

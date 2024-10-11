@@ -11,10 +11,10 @@ class UserAdminConfig(UserAdmin):
     model = CustomUser
     search_fields = ('username', 'email')
     list_filter = ('first_name', 'is_active', 'is_staff', 'is_patient')
-    list_display = ('username', 'id', 'email','is_active', 'is_staff', 'is_patient', 'is_doctor')
+    list_display = ('username', 'id', 'email','is_active', 'is_staff', 'is_patient', 'is_doctor', 'is_im', 'is_ob', 'is_gd')
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_patient', 'is_doctor')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_patient', 'is_doctor', 'is_im', 'is_ob', 'is_gd')}),
     )
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 60})}
@@ -32,7 +32,10 @@ class UserAdminConfig(UserAdmin):
                     'is_active',
                     'is_staff',
                     'is_patient',
-                    'is_doctor'
+                    'is_doctor',
+                    'is_im',
+                    'is_ob',
+                    'is_gd',
                 ),
             },
         ),
@@ -49,6 +52,7 @@ admin.site.register(Appointment)
 admin.site.register(Results)
 admin.site.register(Procedures)
 admin.site.register(PatientNotification)  
+admin.site.register(Announcement)
 
 
 admin.site.site_header = "Asher MD Admin"
