@@ -561,8 +561,8 @@ def AssetLink(request):
             "relation": ["delegate_permission/common.handle_all_urls"],
             "target": {
             "namespace": "android_app",
-            "package_name": "xyz.appmaker.lxumxm",
-            "sha256_cert_fingerprints": ["9B:A3:6C:DB:22:09:16:B5:0B:9E:C5:5F:A7:B5:EF:2F:8A:8B:14:3C:5F:0D:87:45:A7:E7:2B:DD:4C:E7:68:DF"]
+            "package_name": "xyz.appmaker.doigcr",
+            "sha256_cert_fingerprints": ["1D:A3:1A:C1:F0:D0:74:51:89:E3:49:62:69:BA:08:94:46:2A:A4:4B:89:2E:FC:AC:3B:AA:81:D5:0A:07:03:61"]
             }
         }
     ]
