@@ -32,12 +32,16 @@
                     <td>
                       {% if i.status == 'Pending' %}
                       <label class="badge badge-info">Pending</label>
-                      {% elif i.status == 'Completed' %}
+                      {% elif i.status == 'Confirm Appearance' %}
+                      <label class="badge badge-info">Confirm Appearance</label>
+                      {% elif i.status == 'Completed' or i.status == 'Results Ready'  %}
                       <label class="badge badge-success">Completed</label>
                       {% elif i.status == 'Cancelled' %}
                         <label class="badge badge-danger">Cancelled</label>
                       {% elif i.status == 'Declined' %}
                       <label class="badge badge-danger">Declined</label>
+                      {% elif i.status == 'No Appearance' %}
+                      <label class="badge badge-danger">No Appearance</label>
                     {% else %}
                       <label class="badge badge-warning">In progress</label>
                       {% endif %}

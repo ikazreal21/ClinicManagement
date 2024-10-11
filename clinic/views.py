@@ -665,11 +665,11 @@ def ViewDoctorAppointment(request, pk):
 @login_required(login_url='patient_login')
 def DoctorAppointmentHistory(request):
     if request.user.is_im:
-        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), Q(procedures__icontains='(Doctor)') & Q(procedures__icontains='IM')).order_by('datetime')
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') & Q(procedures__icontains='IM')).order_by('datetime')
     elif request.user.is_gd: 
-        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='GD')).order_by('datetime')
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='GD')).order_by('datetime')
     elif request.user.is_ob:
-        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='OB')).order_by('datetime')
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='OB')).order_by('datetime')
     else:
         appointments = []
     context = {'appointments': appointments}
@@ -751,7 +751,7 @@ def ViewStaffAppointment(request, pk):
     })
 
 def StaffAppointmentHistory(request):
-    appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance'), procedures__icontains='(Staff)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), procedures__icontains='(Staff)').order_by('datetime')
     context = {'appointments': appointments}
     return render(request, 'staff/appointment_history.html', context)
 
