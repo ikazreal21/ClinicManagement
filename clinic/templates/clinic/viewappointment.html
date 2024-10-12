@@ -24,26 +24,24 @@
             <img class="img-lg" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
             {% endif %}
             <h4>Date: {{appointment.date}}</h4>
-            <h4>Procedures:
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th>Procedure</th>
+                        <th>Procedures</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for i in procedure %}
                     <tr>
                         <td>
-                        {{i | title}}
+                        <strong>{{i | title}}</strong>
                         </td>
                     </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
-            </h4>
             <!-- <h4>Staff: {{appointment.staff_name}}</h4>
             <h4>Specialization: {{appointment.specialization | title}}</h4> -->
             <h4>Status: {{appointment.status | title}}</h4>
