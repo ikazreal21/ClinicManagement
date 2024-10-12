@@ -74,7 +74,7 @@ urlpatterns = [
 
     path("announcements/", views.Announcements, name="announcements"),
 
-    path("reports/", views.appointment_statistics, name="reports")
+    path("reports/", views.appointment_statistics, name="reports"),
 
     # terms and conditions
     path("terms/", views.Terms, name="terms"),
