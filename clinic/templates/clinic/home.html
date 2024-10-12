@@ -19,7 +19,7 @@
                 {% if i.patientimage %}
                     <img class="img-sm rounded-10" src="{{i.patientimage.url}}" alt="profile">
                 {% else %}
-                    <img class="img-sm rounded-10" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile">
+                    <img class="img-sm rounded-10" src="https://api.dicebear.com/9.x/glass/svg?seed={{i.first_name}}" alt="profile">
                 {% endif %}
                 <div class="wrapper ms-3">
                     <p class="ms-1 mb-1 fw-bold">{{i.first_name|title}} {{i.last_name|title}}</p>
