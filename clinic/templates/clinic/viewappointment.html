@@ -25,12 +25,27 @@
             {% endif %}
             <h4>Date: {{appointment.date}}</h4>
             <h4>Procedures:
-                {% for i in procedure %}
-                <br><b>{{i | title}}</b>
-                {% endfor %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Procedure</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in procedure %}
+                    <tr>
+                        <td>
+                        {{i | title}}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             </h4>
-            <h4>Staff: {{appointment.staff_name}}</h4>
-            <h4>Specialization: {{appointment.specialization | title}}</h4>
+            <!-- <h4>Staff: {{appointment.staff_name}}</h4>
+            <h4>Specialization: {{appointment.specialization | title}}</h4> -->
             <h4>Status: {{appointment.status | title}}</h4>
         </div>
         <hr>
