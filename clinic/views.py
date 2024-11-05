@@ -527,21 +527,32 @@ def PatientLogin(request):
 
 def PatientRegister(request):
     if request.method == 'POST':
-        verification_code = create_rand_id()
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            form.save(commit=False).is_patient = True
-            user = form.save()
-            email = form.cleaned_data.get("username")
-            Patient.objects.create(
-                user=user,
-                email=email,
-                verification_code=verification_code
-            )
-            send_verification_email(email, user, verification_code)
-            return redirect('patient_login')
+        username = request.POST.get('username')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        
+        if password1 != password2:
+            messages.error(request, "Passwords do not match.")
+        elif len(password1) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+        elif User.objects.filter(username=username).exists():
+            messages.error(request, "This email is already registered.")
         else:
-            messages.error(request, 'An error occured')
+            verification_code = create_rand_id()
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                form.save(commit=False).is_patient = True
+                user = form.save()
+                email = form.cleaned_data.get("username")
+                Patient.objects.create(
+                    user=user,
+                    email=email,
+                    verification_code=verification_code
+                )
+                send_verification_email(email, user, verification_code)
+                return redirect('patient_login')
+            else:
+                messages.error(request, 'An error occured')
     else:
         form = CreateUserForm()
     return render(request, 'patient/register.html', {'form': form})
@@ -795,6 +806,15 @@ def Landing(request):
     context = {'services': services}
     print(services)
     return render(request, 'clinic/landing.html', context)
+
+def About(request):
+    return render(request, 'clinic/about.html')
+
+def Services(request):
+    services = Procedures.objects.all()[0:3]
+    context = {'services': services}
+    print(services)
+    return render(request, 'clinic/services.html', context)
 
 def NeedVerification(request):
     logout(request)

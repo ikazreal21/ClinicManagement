@@ -72,8 +72,10 @@
               <input type="date" class="form-control" id="exampleInputPassword1" name="date" min="{{ today_date }}" required>
             </div>
             <div class="form-group">
-              <label for="exampleInputConfirmPassword1">Time</label>
-              <input type="time" class="form-control" id="exampleInputConfirmPassword1" name="time" required>
+                <label for="appointmentTime">Time</label>
+                <select class="form-control" id="appointmentTime" name="time" required>
+                  <!-- Options will be dynamically populated -->
+                </select>
             </div>
             <button type="submit" class="btn btn-primary me-2">Submit</button>
             <button type="reset" class="btn btn-light">Cancel</button>
@@ -84,6 +86,46 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const timeSelect = document.getElementById('appointmentTime');
+        const dateInput = document.getElementById('exampleInputPassword1'); // Date input for tracking the selected day
+    
+        function populateTimeOptions(day) {
+        // Clear existing options
+        timeSelect.innerHTML = '';
+    
+        // Define time range based on the day
+        let startTime, endTime;
+        if (day >= 1 && day <= 5) { // Monday to Friday
+            startTime = new Date(0, 0, 0, 7, 30); // 7:30 AM
+            endTime = new Date(0, 0, 0, 18, 0);  // 6:00 PM
+        } else if (day === 6) { // Saturday
+            startTime = new Date(0, 0, 0, 8, 0);  // 8:00 AM
+            endTime = new Date(0, 0, 0, 17, 0);   // 5:00 PM
+        } else { // Sunday (no available slots)
+            timeSelect.innerHTML = '<option value="">Closed</option>';
+            return;
+        }
+    
+        // Generate 30-minute interval options
+        while (startTime <= endTime) {
+            const option = document.createElement('option');
+            option.value = option.text = startTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            timeSelect.appendChild(option);
+    
+            // Increment by 30 minutes
+            startTime.setMinutes(startTime.getMinutes() + 30);
+        }
+        }
+    
+        // Populate time options based on selected date
+        dateInput.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        const dayOfWeek = selectedDate.getUTCDay(); // 0 = Sunday, 1 = Monday, etc.
+        console.log(dayOfWeek)
+        populateTimeOptions(dayOfWeek);
+        });
+    });
     // Event listeners for adding selects
     document.getElementById('add-doctor-btn').addEventListener('click', function() {
         addSelect('doctor-select-container');
