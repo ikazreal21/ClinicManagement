@@ -21,16 +21,29 @@
             {% if profile.patientimage %}
             <img class="img-lg" src="{{profile.patientimage.url}}" alt="profile" style="margin-bottom: 1rem;">
             {% else %}
-            <img class="img-lg" src="https://api.dicebear.com/8.x/lorelei/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
+            <img class="img-lg" src="https://api.dicebear.com/9.x/glass/svg?seed={{i.first_name}}" alt="profile" style="margin-bottom: 1rem;">
             {% endif %}
             <h4>Date: {{appointment.date}}</h4>
-            <h4>Procedures:
-                {% for i in procedure %}
-                <br><b>{{i | title}}</b>
-                {% endfor %}
-            </h4>
-            <h4>Staff: {{appointment.staff_name}}</h4>
-            <h4>Specialization: {{appointment.specialization | title}}</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Procedures</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in procedure %}
+                    <tr>
+                        <td>
+                        <strong>{{i | title}}</strong>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- <h4>Staff: {{appointment.staff_name}}</h4>
+            <h4>Specialization: {{appointment.specialization | title}}</h4> -->
             <h4>Status: {{appointment.status | title}}</h4>
         </div>
         <hr>

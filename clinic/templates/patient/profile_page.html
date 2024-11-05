@@ -22,7 +22,7 @@
             </div>
             <div class="form-group">
               <label for="exampleInputUsername1">Phone</label>
-              <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Phone" name="phone" value="{{patient.phone}}">
+              <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Phone" name="phone" max="11" min="11" value="{{patient.phone}}">
             </div>
             <div class="form-group">
               <label for="exampleInputUsername1">Email</label>
@@ -68,7 +68,7 @@
             </div>
             <div class="form-group">
                 <label for="exampleInputUsername1">Emergency Contact Relationship</label>
-                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Relationship" name="emergency_contact_relationship" value="{{patient.emergency_contact_relationship}}">
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Relationship" max="11" min="11" name="emergency_contact_relationship" value="{{patient.emergency_contact_relationship}}">
             </div>
             <hr>
             <button type="submit" class="btn btn-primary me-2">Save</button>

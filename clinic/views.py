@@ -22,7 +22,8 @@ from django.http import JsonResponse
 
 import requests 
 import ast
-from django.db.models import Q
+from django.db.models import Count, Avg, Q
+from django.db.models.functions import TruncMonth
 
 from .models import *
 from .forms import *
@@ -572,8 +573,8 @@ def AssetLink(request):
             "relation": ["delegate_permission/common.handle_all_urls"],
             "target": {
             "namespace": "android_app",
-            "package_name": "xyz.appmaker.lxumxm",
-            "sha256_cert_fingerprints": ["9B:A3:6C:DB:22:09:16:B5:0B:9E:C5:5F:A7:B5:EF:2F:8A:8B:14:3C:5F:0D:87:45:A7:E7:2B:DD:4C:E7:68:DF"]
+            "package_name": "xyz.appmaker.doigcr",
+            "sha256_cert_fingerprints": ["1D:A3:1A:C1:F0:D0:74:51:89:E3:49:62:69:BA:08:94:46:2A:A4:4B:89:2E:FC:AC:3B:AA:81:D5:0A:07:03:61"]
             }
         }
     ]
@@ -824,3 +825,45 @@ def Announcements(request):
     announcements = Announcement.objects.all()
     context = {'announcements': announcements}
     return render(request, 'patient/announcements.html', context)
+
+
+def appointment_statistics(request):
+    # Get current date and time
+    now = timezone.now()
+    start_of_month = now.replace(day=1)
+
+    # Filter appointments for the current month
+    current_month_appointments = Appointment.objects.filter(datetime__gte=start_of_month)
+
+    # Total appointments
+    total_appointments = Appointment.objects.count()
+
+    # Appointments approved this month
+    approved_this_month = current_month_appointments.filter(status="Approved").count()
+
+    # Appointments completed this month
+    completed_this_month = current_month_appointments.filter(status="Completed").count()
+
+    # Appointments declined this month
+    declined_this_month = current_month_appointments.filter(status="Declined").count()
+
+    # Average appointments per month (across all months)
+    avg_appointments_per_month = Appointment.objects.annotate(
+        month=TruncMonth('datetime')
+    ).values('month').annotate(total=Count('id')).aggregate(avg=Avg('total'))['avg']
+
+    # Average declined appointments per month
+    avg_declined_per_month = Appointment.objects.filter(status="Declined").annotate(
+        month=TruncMonth('datetime')
+    ).values('month').annotate(total=Count('id')).aggregate(avg=Avg('total'))['avg']
+
+    context = {
+        'total_appointments': total_appointments,
+        'approved_this_month': approved_this_month,
+        'completed_this_month': completed_this_month,
+        'declined_this_month': declined_this_month,
+        'avg_appointments_per_month': avg_appointments_per_month,
+        'avg_declined_per_month': avg_declined_per_month,
+    }
+
+    return render(request, 'clinic/reports.html', context)
