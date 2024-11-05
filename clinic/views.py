@@ -811,8 +811,8 @@ def Landing(request):
 def About(request):
     return render(request, 'clinic/about.html')
 
-def Services(request):
-    services = Procedures.objects.all()[0:3]
+def ServicesLanding(request):
+    services = Procedures.objects.all()[0:9]
     context = {'services': services}
     print(services)
     return render(request, 'clinic/services.html', context)
