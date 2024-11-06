@@ -145,10 +145,12 @@ def AddAppointment(request):
         last_name = request.POST.get('last_name')
 
         datetime_str = f"{date} {time}"
+        appointment_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')    
+
         patient_name = f"{first_name} {last_name}"
         print(form.errors)
         if form.is_valid():
-            form.save(commit=False).datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M')
+            form.save(commit=False).datetime = appointment_datetime
             form.save(commit=False).status = "Pending"
             form.save(commit=False).patient_name = patient_name
             form.save(commit=False).procedures = procedures
