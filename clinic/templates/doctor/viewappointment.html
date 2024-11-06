@@ -45,6 +45,11 @@
             <h4>Specialization: {{appointment.specialization | title}}</h4> -->
             <h4>Status: {{appointment.status | title}}</h4>
         </div>
+        {% if appointment.status == 'Completed' %}
+            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'follow_up' profile.id %}"><i class="mdi mdi-close-box">
+            </i>Follow Up Checkup
+            </a>
+        {% endif %}
         <!-- <hr> -->
         <!-- {% if appointment.status == 'Pending' %}
             <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}">

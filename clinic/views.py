@@ -16,6 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime, time, timedelta
+from django.utils.dateparse import parse_date
 # from pytz import timezone
 
 from django.http import JsonResponse
@@ -29,6 +30,30 @@ from .models import *
 from .forms import *
 from .utils import *
 
+DOCTOR_SCHEDULES = {
+    'OB': {
+        0: [],  # Sunday
+        1: [(14, 0), (18, 0)],  # Monday 2-6 PM
+        2: [(10, 0), (18, 0)],  # Tuesday 10 AM-6 PM
+        3: [(13, 0), (18, 0)],  # Wednesday 1-6 PM
+        4: [(10, 0), (18, 0)],  # Thursday 10 AM-6 PM
+        5: [(14, 30), (18, 0)],  # Friday 2:30-6 PM
+    },
+    'IM': {
+        0: [],  # Sunday
+        1: [(11, 0), (18, 0)],  # Monday 11 AM-6 PM
+        2: [(11, 0), (18, 0)],  # Tuesday 11 AM-6 PM
+        3: [(11, 0), (18, 0)],  # Wednesday 11 AM-6 PM
+    },
+    'GD': {
+        0: [],  # Sunday
+        1: [(14, 0), (18, 0)],  # Monday to Friday 2-6 PM
+        2: [(14, 0), (18, 0)],
+        3: [(14, 0), (18, 0)],
+        4: [(14, 0), (18, 0)],
+        5: [(14, 0), (18, 0)],
+    },
+}
 
 @login_required(login_url='login')
 def Home(request):
@@ -333,6 +358,7 @@ def notif(patient):
 def PatientHome(request):
     patient = Patient.objects.get(user=request.user)
     appointments = Appointment.objects.filter(patient=patient, status="Approved").order_by('datetime')
+    announcements = Announcement.objects.all()
     # for appoinment in appointments:
     #     if appoinment.procedures:
     #         print(appoinment.procedures)
@@ -343,9 +369,10 @@ def PatientHome(request):
     else:
         return redirect('need_verification')
 
-    
-    context = {'appointments': appointments, 'notif': notif(patient)}
-    return render(request, 'patient/dashboard.html', context)
+    context = {'announcements': announcements}
+    return render(request, 'patient/announcements.html', context)
+    # context = {'appointments': appointments, 'notif': notif(patient)}
+    # return render(request, 'patient/dashboard.html', context)
 
 
 @login_required(login_url='patient_login')
@@ -394,66 +421,73 @@ def CancelAppointment(request, pk):
 @login_required(login_url='patient_login')
 def PatientAddAppointment(request):
     patient = Patient.objects.get(user=request.user)
+    # doctor_procedures = Procedures.objects.filter(category='doctor')
+    doctor_procedures = {
+        'OB': list(Procedures.objects.filter(category='doctor', doctor_procedure='OB').values('name', 'doctor_procedure')),
+        'IM': list(Procedures.objects.filter(category='doctor', doctor_procedure='IM').values('name', 'doctor_procedure')),
+        'GD': list(Procedures.objects.filter(category='doctor', doctor_procedure='GD').values('name', 'doctor_procedure'))
+    }
     
-    # Separate procedures for doctors and staff
-    doctor_procedures = Procedures.objects.filter(category='doctor')
-    staff_procedures = Procedures.objects.filter(category='staff')
-    
-    philippines_now = timezone.localtime(timezone.now())
-    date_today = date.today()
-    date_today_edited = philippines_now.strftime('%Y-%m-%d')
-
     if patient.is_first_time:
         return redirect('patient_profile')
-    
+
     if request.method == 'POST':
+        doctor = request.POST.get('doctor')
         selects_data = request.POST.get('selects', '')
         selects_list = selects_data.split(',') if selects_data else []
-        print(selects_list)
+        date_str = request.POST.get('date')
+        time_str = request.POST.get('time')
+        
+        if not doctor or not date_str or not time_str:
+            messages.error(request, "Please fill all fields.")
+            return redirect('patient_appointment_form')
+        
+        datetime_str = f"{date_str} {time_str}"
+        try:
+            appointment_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+        except ValueError:
+            messages.error(request, "Invalid date or time format.")
+            return redirect('patient_appointment_form')
+        
+        # Validate the appointment time with the doctor's schedule
+        schedule = DOCTOR_SCHEDULES.get(doctor)
+        if not schedule:
+            messages.error(request, "Selected doctor has no available schedule.")
+            return redirect('patient_appointment_form')
+        
+        weekday = appointment_datetime.weekday()
+        start_end_times = schedule.get(weekday)
+        
+        if not start_end_times:
+            messages.error(request, "Doctor is not available on the selected date.")
+            return redirect('patient_appointment_form')
+        
+        if not is_within_time_range(appointment_datetime, start_end_times):
+            messages.error(request, "Selected time is outside the doctor's working hours.")
+            return redirect('patient_appointment_form')
+        
+        # Create and save the appointment
         form = AppointmentFormPatient(request.POST)
-        time = request.POST.get('time')
-        dates = request.POST.get('date')
-        procedures = str(selects_list)
-        datetime_str = f"{dates} {time}"
-        print(datetime_str)
-
         if form.is_valid():
-            try:
-                # Use %I:%M %p for 12-hour format with AM/PM
-                appointment_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
-            except ValueError as e:
-                messages.error(request, f"Error parsing date and time: {e}")
-                return redirect('patient_appointment_form')
-            
-            # Check if appointment falls within clinic hours
-            if not is_within_clinic_hours(appointment_datetime):
-                messages.error(request, 'Appointment time is outside of clinic operating hours.')
-                return redirect('patient_appointment_form')
-            
-            next_appointment_time = find_next_available_appointment_time(patient, appointment_datetime)
-            
-            # Check if the next available appointment time falls within clinic hours
-            if not is_within_clinic_hours(next_appointment_time):
-                messages.error(request, 'Next available appointment time is outside of clinic operating hours.')
-                return redirect('patient_appointment_form')
-            
-            # Save the appointment
             appointment = form.save(commit=False)
-            appointment.datetime = next_appointment_time
+            appointment.datetime = appointment_datetime
             appointment.status = "Pending"
             appointment.patient = patient
-            appointment.procedures = procedures
+            appointment.procedures = str(selects_list)
             appointment.save()
-            
             return redirect('patientdashboard')
 
     context = {
-        'doctor_procedures': doctor_procedures,
-        'staff_procedures': staff_procedures,
-        'today_date': date_today_edited,
-        'notif': notif(patient)
+        'doctor_procedures_json': doctor_procedures,
+        'today_date': timezone.localtime(timezone.now()).strftime('%Y-%m-%d'),
     }
     return render(request, 'patient/addappointment.html', context)
+
+def is_within_time_range(appointment_datetime, start_end_times):
+    start, end = start_end_times
+    start_time = appointment_datetime.replace(hour=start[0], minute=start[1])
+    end_time = appointment_datetime.replace(hour=end[0], minute=end[1])
+    return start_time <= appointment_datetime <= end_time
 
 @login_required(login_url='patient_login')
 def PatientNotif(request):
@@ -617,6 +651,82 @@ def DoctorHome(request):
     return render(request, 'doctor/calendar.html', context)
 
 @login_required(login_url='patient_login')
+def FollowUpAppointment(request, pk):
+    patient = Patient.objects.get(id=pk)
+    if request.user.is_im:
+        doctor = 'IM'
+    elif request.user.is_gd:
+        doctor = 'GD'
+    elif request.user.is_ob:
+        doctor = 'OB'
+    else:
+        doctor_procedures = []
+
+    doctor_procedures = {
+        'OB': list(Procedures.objects.filter(category='doctor', doctor_procedure='OB').values('name', 'doctor_procedure')),
+        'IM': list(Procedures.objects.filter(category='doctor', doctor_procedure='IM').values('name', 'doctor_procedure')),
+        'GD': list(Procedures.objects.filter(category='doctor', doctor_procedure='GD').values('name', 'doctor_procedure'))
+    }
+
+    if request.method == 'POST':
+        selects_data = request.POST.get('selects', '')
+        selects_list = selects_data.split(',') if selects_data else []
+        date_str = request.POST.get('date')
+        time_str = request.POST.get('time')
+        
+        if not doctor or not date_str or not time_str:
+            messages.error(request, "Please fill all fields.")
+            return redirect('patient_appointment_form')
+        
+        datetime_str = f"{date_str} {time_str}"
+        try:
+            appointment_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+        except ValueError:
+            messages.error(request, "Invalid date or time format.")
+            return redirect('patient_appointment_form')
+        
+        # Validate the appointment time with the doctor's schedule
+        schedule = DOCTOR_SCHEDULES.get(doctor)
+        if not schedule:
+            messages.error(request, "Selected doctor has no available schedule.")
+            return redirect('patient_appointment_form')
+        
+        weekday = appointment_datetime.weekday()
+        start_end_times = schedule.get(weekday)
+        
+        if not start_end_times:
+            messages.error(request, "Doctor is not available on the selected date.")
+            return redirect('patient_appointment_form')
+        
+        if not is_within_time_range(appointment_datetime, start_end_times):
+            messages.error(request, "Selected time is outside the doctor's working hours.")
+            return redirect('patient_appointment_form')
+        
+        # Create and save the appointment
+        form = AppointmentFormPatient(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.datetime = appointment_datetime
+            appointment.status = "Pending"
+            appointment.patient = patient
+            appointment.procedures = str(selects_list)
+            appointment.save()
+            return redirect('patientdashboard')
+
+    context = {
+        'doctor' : doctor,
+        'doctor_procedures_json': doctor_procedures,
+        'today_date': timezone.localtime(timezone.now()).strftime('%Y-%m-%d'),
+    }
+    return render(request, 'doctor/followup_appointment.html', context)
+
+def is_within_time_range(appointment_datetime, start_end_times):
+    start, end = start_end_times
+    start_time = appointment_datetime.replace(hour=start[0], minute=start[1])
+    end_time = appointment_datetime.replace(hour=end[0], minute=end[1])
+    return start_time <= appointment_datetime <= end_time
+
+@login_required(login_url='patient_login')
 def DoctorAppointments(request):
     if request.user.is_im:
         appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='IM')).order_by('datetime')
@@ -683,11 +793,11 @@ def ViewDoctorAppointment(request, pk):
 @login_required(login_url='patient_login')
 def DoctorAppointmentHistory(request):
     if request.user.is_im:
-        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') & Q(procedures__icontains='IM')).order_by('datetime')
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') & Q(procedures__icontains='IM')).order_by('-datetime')
     elif request.user.is_gd: 
-        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='GD')).order_by('datetime')
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='GD')).order_by('-datetime')
     elif request.user.is_ob:
-        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='OB')).order_by('datetime')
+        appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), Q(procedures__icontains='(Doctor)') &  Q(procedures__icontains='OB')).order_by('-datetime')
     else:
         appointments = []
     context = {'appointments': appointments}
@@ -723,7 +833,7 @@ def StaffHome(request):
     return render(request, 'staff/calendar.html', context)
 
 def StaffAppointments(request):
-    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), procedures__icontains='(Staff)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Approved") | Q(status="Pending") | Q(status="Confirm Appearance"), procedures__icontains='(Staff)').order_by('-datetime')
     context = {'appointments': appointments}
     return render(request, 'staff/appointments.html', context)
 
@@ -758,7 +868,7 @@ def ViewStaffAppointment(request, pk):
         appointment.save()
         
         messages.success(request, "Procedures updated successfully.")
-        return redirect('view_doctor_appointment', pk=appointment.id)
+        return redirect('view_staff_appointment', pk=appointment.id)
     
     print(structured_procedures)
 
@@ -769,7 +879,7 @@ def ViewStaffAppointment(request, pk):
     })
 
 def StaffAppointmentHistory(request):
-    appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), procedures__icontains='(Staff)').order_by('datetime')
+    appointments = Appointment.objects.filter(Q(status="Completed") | Q(status="Cancelled") | Q(status='Declined') | Q(status='No Appearance') | Q(status='Results Ready'), procedures__icontains='(Staff)').order_by('-datetime')
     context = {'appointments': appointments}
     return render(request, 'staff/appointment_history.html', context)
 
@@ -832,6 +942,22 @@ def Announcements(request):
     context = {'announcements': announcements}
     return render(request, 'patient/announcements.html', context)
 
+def PatientCurrentAppointment(request):
+    patient = Patient.objects.get(user=request.user)
+    appointments = Appointment.objects.filter(patient=patient, status="Approved").order_by('datetime')
+    # for appoinment in appointments:
+    #     if appoinment.procedures:
+    #         print(appoinment.procedures)
+    #         appoinment.procedures = ast.literal_eval(appoinment.procedures)
+    if patient.is_verified:
+        if patient.is_first_time:
+            return redirect('patient_profile')
+    else:
+        return redirect('need_verification')
+
+    context = {'appointments': appointments, 'notif': notif(patient)}
+    return render(request, 'patient/dashboard.html', context)
+
 
 def appointment_statistics(request):
     # Get current date and time
@@ -873,3 +999,50 @@ def appointment_statistics(request):
     }
 
     return render(request, 'clinic/reports.html', context)
+
+
+def get_available_times(request):
+    doctor = request.GET.get('doctor')
+    date_str = request.GET.get('date')
+    
+    # Validate input parameters
+    if not doctor or not date_str:
+        return JsonResponse({'error': 'Invalid doctor or date parameter'}, status=400)
+    
+    selected_date = parse_date(date_str)
+    if not selected_date:
+        return JsonResponse({'error': 'Invalid date format'}, status=400)
+    
+    # Retrieve the schedule for the selected doctor
+    schedule = DOCTOR_SCHEDULES.get(doctor)
+    if not schedule:
+        return JsonResponse({'error': 'No schedule found for the selected doctor'}, status=400)
+    
+    # Determine the doctor's working hours for the selected day
+    weekday = selected_date.weekday()  # Monday = 0, Sunday = 6
+    start_end_times = schedule.get(weekday)
+    if not start_end_times:
+        return JsonResponse({'times': [], 'message': 'Doctor is unavailable on this day'})
+    
+    # Generate available time slots within the doctor's schedule
+    available_times = []
+    start_time, end_time = start_end_times
+    current_time = datetime.combine(selected_date, datetime.min.time()).replace(hour=start_time[0], minute=start_time[1])
+    end_time = datetime.combine(selected_date, datetime.min.time()).replace(hour=end_time[0], minute=end_time[1])
+    
+    # Retrieve booked appointments for the selected doctor on this date
+    booked_times = Appointment.objects.filter(
+        datetime__date=selected_date,
+        doctor=doctor
+    ).values_list('datetime', flat=True)
+    
+    # Convert booked_times to naive datetime objects
+    booked_times_naive = [bt.replace(tzinfo=None) for bt in booked_times]
+    
+    # Generate 30-minute intervals, skipping already booked times
+    while current_time < end_time:
+        if current_time not in booked_times_naive:
+            available_times.append(current_time.strftime('%I:%M %p'))
+        current_time += timedelta(minutes=30)
+    
+    return JsonResponse({'times': available_times})

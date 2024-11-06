@@ -123,9 +123,15 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'patientdashboard' %}">
-              <i class="mdi mdi-grid-large menu-icon"></i>
+            <a class="nav-link" href="{% url 'announcements' %}">
+              <i class="mdi mdi-bell-ring menu-icon"></i>
               <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'patientdashboard' %}">
+              <i class="mdi mdi-bookmark-check menu-icon"></i>
+              <span class="menu-title">Current Appointments</span>
             </a>
           </li>
           <li class="nav-item">
@@ -140,12 +146,6 @@
               <span class="menu-title">Appointment History</span>
             </a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="{% url 'announcements' %}">
-              <i class="mdi mdi-bell-ring menu-icon"></i>
-              <span class="menu-title">Announcements</span>
-            </a>
-          </li> -->
         </ul>
       </nav>
       <!-- partial -->

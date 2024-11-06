@@ -37,7 +37,7 @@ urlpatterns = [
     path("patient_logout/", views.PatientLogout, name="patient_logout"),
     
     path("", views.Services, name="services"),
-    path("dashboard", views.PatientHome, name="patientdashboard"),
+    path("dashboard", views.PatientCurrentAppointment, name="patientdashboard"),
     path("patient_profile/", views.PatientProfile, name="patient_profile"),
     path("patient_notifications/", views.PatientNotif, name="patient_notifications"),
     path("view_notification/<str:pk>/", views.ViewNotif, name="view_notification"),
@@ -56,7 +56,7 @@ urlpatterns = [
     name="view_doctor_appointment"),
     path("appoinment_history/", views.DoctorAppointmentHistory, name="appoinment_history"),
     path("complete_doctor_appointment/<str:pk>/", views.CompleteDoctorAppointment, name="complete_doctor_appointment"),
-
+    path("follow_up/<str:pk>/", views.FollowUpAppointment, name="follow_up"),
 
     ######################
     # Staff
@@ -80,6 +80,8 @@ urlpatterns = [
 
     # terms and conditions
     path("terms/", views.Terms, name="terms"),
+
+    path('get-available-times/', views.get_available_times, name='get_available_times'),
 
     path(".well-known/assetlinks.json", views.AssetLink),
 

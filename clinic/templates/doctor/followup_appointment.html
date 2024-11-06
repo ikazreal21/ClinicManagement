@@ -1,4 +1,4 @@
-{% extends 'patient/base.html' %} 
+{% extends 'doctor/base.html' %} 
 
 {% block content %} 
 
@@ -33,16 +33,17 @@
               <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Name" name="patient_name" required>
             </div>
             <input type="hidden" name="selects" id="selects">
+            <input type="hidden" name="doctorSelect" id="doctorSelect" value="{{doctor}}">
             
             <!-- Doctor Selection -->
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="doctorSelect">Select Doctor</label>
                 <select class="form-control" id="doctorSelect" name="doctor" required>
                     <option value="OB">OB</option>
                     <option value="IM">Internal Medicine</option>
                     <option value="GD">General Doctor</option>
                 </select>
-            </div>
+            </div> -->
             <div class="containers">
                 <h5>Doctor Procedures</h5>
                 <div id="doctor-select-container">

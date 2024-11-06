@@ -115,6 +115,7 @@ class Appointment(models.Model):
     status = models.CharField(max_length=255, default="Pending", null=True, blank=True)
     report = models.FileField(upload_to='reports/', null=True, blank=True)
     document_id = models.CharField(max_length=255, null=True, blank=True)
+    doctor = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Appointment'
