@@ -418,8 +418,12 @@ def PatientAddAppointment(request):
         print(datetime_str)
 
         if form.is_valid():
-            # Create datetime object from date and time
-            appointment_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M')
+            try:
+                # Use %I:%M %p for 12-hour format with AM/PM
+                appointment_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+            except ValueError as e:
+                messages.error(request, f"Error parsing date and time: {e}")
+                return redirect('patient_appointment_form')
             
             # Check if appointment falls within clinic hours
             if not is_within_clinic_hours(appointment_datetime):

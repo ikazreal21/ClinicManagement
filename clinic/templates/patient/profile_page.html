@@ -1,4 +1,4 @@
-{% extends 'patient/base.html' %} 
+{% extends 'patient/base.html' %}
 
 {% block content %} 
 <div class="row">
@@ -6,12 +6,8 @@
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Profile/User Details</h4>
-          <form class="forms-sample" method="post">
+          <form class="forms-sample" method="post" onsubmit="return validatePhoneNumber()">
             {% csrf_token %}
-            <!-- <div class="form-group">
-              <label for="exampleInputUsername1">Patient Name</label>
-              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Name" name="patient_name">
-            </div> -->
             <div class="form-group">
               <label for="exampleInputUsername1">First Name</label>
               <input type="text" class="form-control" id="exampleInputUsername1" placeholder="First Name" name="first_name" value="{{patient.first_name}}">
@@ -22,7 +18,8 @@
             </div>
             <div class="form-group">
               <label for="exampleInputUsername1">Phone</label>
-              <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Phone" name="phone" max="11" min="11" value="{{patient.phone}}">
+              <input type="text" class="form-control" id="phoneInput" placeholder="Phone" name="phone" value="{{patient.phone}}">
+              <small class="text-danger" id="phoneError" style="display:none;">Phone number must be exactly 11 digits.</small>
             </div>
             <div class="form-group">
               <label for="exampleInputUsername1">Email</label>
@@ -60,15 +57,16 @@
             <h4 class="card-title">Emergency Contact Details</h4>
             <div class="form-group">
                 <label for="exampleInputUsername1">Emergency Contact Name</label>
-                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Name Name" name="emergency_contact_name" value="{{patient.emergency_contact_name}}">
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Name" name="emergency_contact_name" value="{{patient.emergency_contact_name}}">
             </div>
             <div class="form-group">
                 <label for="exampleInputUsername1">Emergency Contact Number</label>
-                <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Number Name" name="emergency_contact_phone" value="{{patient.emergency_contact_phone}}">
+                <input type="text" class="form-control" id="emergencyPhoneInput" placeholder="Emergency Contact Number" name="emergency_contact_phone" value="{{patient.emergency_contact_phone}}">
+                <small class="text-danger" id="emergencyPhoneError" style="display:none;">Emergency contact number must be exactly 11 digits.</small>
             </div>
             <div class="form-group">
                 <label for="exampleInputUsername1">Emergency Contact Relationship</label>
-                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Relationship" max="11" min="11" name="emergency_contact_relationship" value="{{patient.emergency_contact_relationship}}">
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Emergency Contact Relationship" name="emergency_contact_relationship" value="{{patient.emergency_contact_relationship}}">
             </div>
             <hr>
             <button type="submit" class="btn btn-primary me-2">Save</button>
@@ -78,4 +76,31 @@
       </div>
     </div>
 </div>
+
+<script>
+function validatePhoneNumber() {
+    var phone = document.getElementById("phoneInput").value;
+    var emergencyPhone = document.getElementById("emergencyPhoneInput").value;
+    var phoneError = document.getElementById("phoneError");
+    var emergencyPhoneError = document.getElementById("emergencyPhoneError");
+    var valid = true;
+
+    if (phone.length != 11) {
+        phoneError.style.display = 'block';
+        valid = false;
+    } else {
+        phoneError.style.display = 'none';
+    }
+
+    if (emergencyPhone.length != 11) {
+        emergencyPhoneError.style.display = 'block';
+        valid = false;
+    } else {
+        emergencyPhoneError.style.display = 'none';
+    }
+
+    return valid;
+}
+</script>
+
 {% endblock %}
