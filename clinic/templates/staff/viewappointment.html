@@ -45,19 +45,7 @@
             <h4>Specialization: {{appointment.specialization | title}}</h4> -->
             <h4>Status: {{appointment.status | title}}</h4>
         </div>
-        <!-- <hr>
-        {% if appointment.status == 'Pending' %}
-            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'approveappointment' appointment.id %}">
-                <i class="mdi mdi-bulletin-board"></i>Approve
-            </a>
-            <button type="button" class="btn btn-danger btn-lg text-white mb-0 me-0" onclick="showDeclineModal()">
-                <i class="mdi mdi-close-box"></i>Decline
-            </button>
-        {% elif appointment.status == 'Approved' %}
-            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'complete_staff_appointment' appointment.id %}">
-                <i class="mdi mdi-check"></i>Complete
-            </a>
-        {% endif %} -->
+ 
     </div>
 </div>
 
