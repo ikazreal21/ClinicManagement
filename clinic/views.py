@@ -88,6 +88,9 @@ def AppointmentPage(request):
 def ViewAppointment(request, pk):
     appointment = Appointment.objects.get(id=pk)
 
+    current_date_str = datetime.now().strftime('%b %e %Y')
+    print(appointment.onlydate == current_date_str)
+
     array = ast.literal_eval(appointment.procedures)
     array = [item.strip() for item in array]
 
@@ -145,9 +148,11 @@ def ViewAppointment(request, pk):
         return redirect('appointments')
 
     # print(array)
-
     if appointment.patient:
-        context = {'appointment': appointment, 'procedure': array, 'profile': appointment.patient, 'is_specialization': is_specialization}
+        context = {'appointment': appointment, 'procedure': array, 
+                    'profile': appointment.patient, 
+                   'is_specialization': is_specialization, 
+                   'current_date_str': appointment.onlydate == current_date_str }
     else: 
         context = {'appointment': appointment , 'procedure': array, 'is_specialization': is_specialization}
     return render(request, 'clinic/viewappointment.html', context)
@@ -406,6 +411,20 @@ def PatientAppointment(request):
 
 @login_required(login_url='patient_login')
 def CancelAppointment(request, pk):
+    if request.method == 'POST':
+        reason = request.POST.get('cancel_reason')
+        patient = Patient.objects.get(user=request.user)
+        appointment = Appointment.objects.get(id=pk)
+        appointment.status = "Cancelled"
+        appointment.save()
+        PatientNotification.objects.create(
+            patient=patient,
+            appointment_id=appointment.id,
+            title='Appointment Cancelled',
+            message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Cancelled. for the Reason of: {reason}'
+        )
+        return redirect('patient_appointments')
+
     patient = Patient.objects.get(user=request.user)
     appointment = Appointment.objects.get(id=pk)
     appointment.status = "Cancelled"
@@ -576,7 +595,7 @@ def PatientRegister(request):
             messages.error(request, "Passwords do not match.")
         elif len(password1) < 8:
             messages.error(request, "Password must be at least 8 characters long.")
-        elif User.objects.filter(username=username).exists():
+        elif CustomUser.objects.filter(username=username).exists():
             messages.error(request, "This email is already registered.")
         else:
             verification_code = create_rand_id()
@@ -928,7 +947,7 @@ def About(request):
     return render(request, 'clinic/about.html')
 
 def ServicesLanding(request):
-    services = Procedures.objects.all()[0:9]
+    services = Procedures.objects.order_by('?')[:9]
     context = {'services': services}
     print(services)
     return render(request, 'clinic/services.html', context)

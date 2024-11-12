@@ -83,7 +83,7 @@
             <!-- Date Selection -->
             <div class="form-group">
               <label for="exampleInputPassword1">Date</label>
-              <input type="date" class="form-control" id="exampleInputPassword1" name="date" min="{{ today_date }}" required>
+              <input type="date" class="form-control" id="exampleInputPassword1" name="date" required>
             </div>
 
             <!-- Time Selection -->
@@ -214,6 +214,23 @@
     
         // Initialize the procedure list based on the default selection
         updateProcedures();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('exampleInputPassword1');
+        
+        // Get today's date and add two days
+        const today = new Date();
+        today.setDate(today.getDate() + 2); // Set the date two days in advance
+        
+        // Format the date as YYYY-MM-DD
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const minDate = `${year}-${month}-${day}`;
+        
+        // Set the minimum date attribute
+        dateInput.min = minDate;
     });
 </script>
 

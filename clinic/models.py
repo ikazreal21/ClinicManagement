@@ -127,6 +127,9 @@ class Appointment(models.Model):
     
     def date(self):
         return self.datetime.strftime('%b %e %Y %I:%M %p')
+    
+    def onlydate(self):
+        return self.datetime.strftime('%b %e %Y')
 
 class Results(models.Model):
     patient = models.OneToOneField(Appointment, on_delete=models.CASCADE, null=True, blank=True)
@@ -174,6 +177,7 @@ class Procedures(models.Model):
 
     name = models.CharField(max_length=255, null=True, blank=True)
     category = models.CharField(max_length=50, choices=CATEGORY, null=True, blank=True)
+    description = models.TextField(blank=True)
     doctor_procedure = models.CharField(max_length=50, choices=PROCEDURE_CHOICES, null=True, blank=True)
 
     class Meta:

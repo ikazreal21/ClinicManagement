@@ -55,12 +55,19 @@
                 <i class="mdi mdi-close-box"></i>Decline
             </button>
         {% elif appointment.status == 'Approved' %}
-            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'confirmappearance' appointment.id %}"><i class="mdi mdi-check">
-            </i>Confirm Appearance
-            </a>/
-            <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'noappearance' appointment.id %}"><i class="mdi mdi-close">
-            </i>No Appearance
-            </a>
+            {% if current_date_str %}
+                <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'confirmappearance' appointment.id %}"><i class="mdi mdi-check">
+                </i>Confirm Appearance
+                </a>/
+                <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'noappearance' appointment.id %}"><i class="mdi mdi-close">
+                </i>No Appearance
+                </a>
+            {% else %}
+                <h3 style="text-align: center;">Not on the date yet</h3>
+            {% endif %}
+            <button type="button" class="btn btn-danger btn-lg text-white mb-0 me-0" onclick="showCancelModal()">
+                <i class="mdi mdi-close-box"></i>Cancel
+            </button>
             <!-- <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'completeappointment' appointment.id %}"><i class="mdi mdi-check">
             </i>Complete
             </a> -->
@@ -74,6 +81,8 @@
                 </i>Results is Ready for Pickup
                 </a>
             {% endif %}
+        {% elif appointment.status == 'Cancelled' %}
+                <h2>Appointment Cancelled</h2>
         {% endif %}
     </div>
 </div>
@@ -94,6 +103,27 @@
                 </div>
                 <button type="submit" class="btn btn-danger">Submit</button>
                 <button type="button" class="btn btn-secondary" onclick="hideDeclineModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Modal -->
+<div id="cancelModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Cancel Appointment</h5>
+            <button type="button" class="close" onclick="hideCancelModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="cancelForm" method="POST" action="{% url 'cancel_appointment' appointment.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="cancelReason">Reason for Cancelation of Appointment:</label>
+                    <textarea class="form-control" id="cancelReason" name="cancel_reason" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-danger">Submit</button>
+                <button type="button" class="btn btn-secondary" onclick="hideCancelModal()">Cancel</button>
             </form>
         </div>
     </div>
@@ -148,6 +178,16 @@
     // Hide the decline modal
     function hideDeclineModal() {
         document.getElementById("declineModal").style.display = "none";
+    }
+
+    // Show the decline modal
+    function showCancelModal() {
+        document.getElementById("cancelModal").style.display = "block";
+    }
+
+    // Hide the decline modal
+    function hideCancelModal() {
+        document.getElementById("cancelModal").style.display = "none";
     }
 </script>
 

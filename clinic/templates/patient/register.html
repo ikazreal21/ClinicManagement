@@ -91,19 +91,25 @@
                   const password1 = document.getElementById("password1").value;
                   const password2 = document.getElementById("password2").value;
                   const passwordHelp = document.getElementById("passwordHelp");
-              
-                  if (password1.length < 8) {
-                    passwordHelp.textContent = "Password must be at least 8 characters.";
+
+                  // Regular expression to check all conditions
+                  const passwordCriteria = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+                  // Check if password meets all criteria
+                  if (!passwordCriteria.test(password1)) {
+                    passwordHelp.textContent = "Password must be at least 8 characters long, with at least one uppercase letter, one lowercase letter, one number, and one special symbol.";
                     passwordHelp.style.color = "red";
                     return false;
                   }
-              
+
+                  // Check if passwords match
                   if (password1 !== password2) {
                     passwordHelp.textContent = "Passwords do not match.";
                     passwordHelp.style.color = "red";
                     return false;
                   }
-              
+
+                  // Clear any error messages if validation passes
                   passwordHelp.textContent = "";
                   return true;
                 }

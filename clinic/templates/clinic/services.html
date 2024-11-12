@@ -90,15 +90,31 @@
                         <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-4" style="width: 65px; height: 65px;">
                             <i class="fa fa-heartbeat text-primary fs-4"></i>
                         </div>
-                        <h4 class="mb-3">{{i.name | title}}</h4>
-                        <!-- <p class="mb-4">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet.</p> -->
-                        <a class="btn" href="{% url 'patient_login' %}"><i class="fa fa-plus text-primary me-3"></i>Read More</a>
+                        <h4 class="mb-3">{{ i.name | title }}</h4>
+                        <p class="service-description mb-4" style="display: none;">{{ i.description }}</p>
+                        <button class="btn read-more-btn" onclick="toggleDescription(this)">
+                            <i class="fa fa-plus text-primary me-3"></i>Read More
+                        </button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
+    
+    <script>
+        function toggleDescription(button) {
+            const description = button.previousElementSibling;
+            if (description.style.display === "none") {
+                description.style.display = "block";
+                button.innerHTML = '<i class="fa fa-minus text-primary me-3"></i>Read Less';
+            } else {
+                description.style.display = "none";
+                button.innerHTML = '<i class="fa fa-plus text-primary me-3"></i>Read More';
+            }
+        }
+    </script>
+    
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
