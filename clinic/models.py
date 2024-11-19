@@ -116,6 +116,7 @@ class Appointment(models.Model):
     report = models.FileField(upload_to='reports/', null=True, blank=True)
     document_id = models.CharField(max_length=255, null=True, blank=True)
     doctor = models.CharField(max_length=255, null=True, blank=True)
+    reasons = models.CharField(max_length=255,null=True, blank=True)
 
     class Meta:
         verbose_name = 'Appointment'
@@ -146,6 +147,10 @@ class PatientNotification(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     message = models.TextField(null=True, blank=True)
     is_read = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def date(self):
+        return self.date_created.strftime('%b %e %Y %I:%M %p')
 
     class Meta:
         verbose_name = 'Patient Notification'

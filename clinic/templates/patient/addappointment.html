@@ -114,9 +114,10 @@
         function updateAvailableTimes() {
             const doctor = doctorSelect.value;
             const date = dateInput.value;
+            
+            console.log(date);
 
             if (!doctor || !date) return;
-
             // Fetch available times based on selected doctor and date
             fetch(`/get-available-times/?doctor=${doctor}&date=${date}`)
                 .then(response => response.json())

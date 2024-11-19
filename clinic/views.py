@@ -32,26 +32,31 @@ from .utils import *
 
 DOCTOR_SCHEDULES = {
     'OB': {
-        0: [],  # Sunday
-        1: [(14, 0), (18, 0)],  # Monday 2-6 PM
-        2: [(10, 0), (18, 0)],  # Tuesday 10 AM-6 PM
-        3: [(13, 0), (18, 0)],  # Wednesday 1-6 PM
-        4: [(10, 0), (18, 0)],  # Thursday 10 AM-6 PM
-        5: [(14, 30), (18, 0)],  # Friday 2:30-6 PM
+        0: [(14, 0), (18, 0)],  # Monday 2-6 PM
+        1: [(10, 0), (18, 0)],  # Tuesday 10 AM-6 PM
+        2: [(13, 0), (18, 0)],  # Wednesday 1-6 PM
+        3: [(10, 0), (18, 0)],  # Thursday 10 AM-6 PM
+        4: [(14, 30), (18, 0)],  # Friday 2:30-6 PM
+        5: [],
+        6: [],
     },
     'IM': {
-        0: [],  # Sunday
-        1: [(11, 0), (18, 0)],  # Monday 11 AM-6 PM
-        2: [(11, 0), (18, 0)],  # Tuesday 11 AM-6 PM
-        3: [(11, 0), (18, 0)],  # Wednesday 11 AM-6 PM
+        0: [(11, 0), (18, 0)],  # Monday 11 AM-6 PM
+        1: [(11, 0), (18, 0)],  # Tuesday 11 AM-6 PM
+        2: [(11, 0), (18, 0)],  # Wednesday 11 AM-6 PM
+        3: [],
+        4: [],
+        5: [],
+        6: [],
     },
     'GD': {
-        0: [],  # Sunday
-        1: [(14, 0), (18, 0)],  # Monday to Friday 2-6 PM
+        0: [(14, 0), (18, 0)],  # Monday to Friday 2-6 PM
+        1: [(14, 0), (18, 0)],
         2: [(14, 0), (18, 0)],
         3: [(14, 0), (18, 0)],
         4: [(14, 0), (18, 0)],
-        5: [(14, 0), (18, 0)],
+        5: [],
+        6: [],
     },
 }
 
@@ -181,7 +186,7 @@ def AddAppointment(request):
         print(form.errors)
         if form.is_valid():
             form.save(commit=False).datetime = appointment_datetime
-            form.save(commit=False).status = "Pending"
+            form.save(commit=False).status = "Confirm Appearance"
             form.save(commit=False).patient_name = patient_name
             form.save(commit=False).procedures = procedures
             form.save()
@@ -402,6 +407,8 @@ def PatientProfile(request):
 
 @login_required(login_url='patient_login')
 def PatientAppointment(request):
+    if request.user.is_superuser:
+        return redirect('appointments')
     patient = Patient.objects.get(user=request.user)
     if patient.is_first_time:
         return redirect('patient_profile')
@@ -413,9 +420,12 @@ def PatientAppointment(request):
 def CancelAppointment(request, pk):
     if request.method == 'POST':
         reason = request.POST.get('cancel_reason')
-        patient = Patient.objects.get(user=request.user)
+
         appointment = Appointment.objects.get(id=pk)
+        patient = Patient.objects.get(user=appointment.patient.user)
+        
         appointment.status = "Cancelled"
+        appointment.reasons = reason
         appointment.save()
         PatientNotification.objects.create(
             patient=patient,
@@ -425,8 +435,9 @@ def CancelAppointment(request, pk):
         )
         return redirect('patient_appointments')
 
-    patient = Patient.objects.get(user=request.user)
     appointment = Appointment.objects.get(id=pk)
+    patient = Patient.objects.get(user=appointment.patient.user)
+
     appointment.status = "Cancelled"
     appointment.save()
     PatientNotification.objects.create(
@@ -1039,6 +1050,7 @@ def get_available_times(request):
     
     # Determine the doctor's working hours for the selected day
     weekday = selected_date.weekday()  # Monday = 0, Sunday = 6
+    print(weekday)
     start_end_times = schedule.get(weekday)
     if not start_end_times:
         return JsonResponse({'times': [], 'message': 'Doctor is unavailable on this day'})

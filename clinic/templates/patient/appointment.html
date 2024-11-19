@@ -1,5 +1,5 @@
 {% extends 'patient/base.html' %} 
-
+{% load static %}
 {% block content %} 
 <div class="row">
     <div class="col-lg-12 grid-margin stretch-card">
@@ -48,13 +48,30 @@
                         <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="{% url 'view_appointment' i.id %}"><i class="mdi mdi-briefcase-check">
                           </i>View
                         </a>
-                        {% if i.status == 'Pending' %}
-                            <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'cancel_appointment' i.id %}"><i class="mdi mdi-close-box">
+                        {% if i.status == 'Pending' or i.status == 'Approved' %}
+                            <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" onclick="showConfirmModal()"><i class="mdi mdi-close-box">
                             </i>Cancel
                             </a>
                         {% endif %}
                     </td>
                   </tr>
+
+                  
+                  <div id="confirmModal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm Action</h5>
+                            <button type="button" class="close" onclick="hideConfirmModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="confirmModal">Are you sure to Confirm this?:</label>
+                            </div>
+                            <a href="{% url 'cancel_appointment' i.id %}" class="btn btn-danger">Submit</a>
+                            <button type="button" class="btn btn-secondary" onclick="hideConfirmModal()">Cancel</button>
+                        </div>
+                    </div>
+                  </div>
                   {% endfor %}
                 </tbody>
               </table>
@@ -63,4 +80,57 @@
         </div>
       </div>
 </div>
+
+<style>
+  /* Modal styles */
+  .modal-content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 5px 15px rgba(0,0,0,.5);
+      padding: 20px;
+      z-index: 1050;
+  }
+  .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+  .modal-body {
+      margin-top: 20px;
+  }
+  .close {
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+  }
+  /* Modal background */
+  #confirmModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1040;
+  }
+</style>
+
+<script>
+      // Show the decline modal
+  function showConfirmModal() {
+      document.getElementById("confirmModal").style.display = "block";
+  }
+
+  // Hide the decline modal
+  function hideConfirmModal() {
+      document.getElementById("confirmModal").style.display = "none";
+  }
+</script>
+
 {% endblock %}
