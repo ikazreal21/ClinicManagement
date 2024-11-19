@@ -601,6 +601,8 @@ def PatientRegister(request):
         username = request.POST.get('username')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
+
+        form = CreateUserForm(request.POST)
         
         if password1 != password2:
             messages.error(request, "Passwords do not match.")
@@ -741,7 +743,7 @@ def FollowUpAppointment(request, pk):
             appointment.patient = patient
             appointment.procedures = str(selects_list)
             appointment.save()
-            return redirect('patientdashboard')
+            return redirect('doctorhome')
 
     context = {
         'doctor' : doctor,
@@ -974,7 +976,7 @@ def Announcements(request):
 
 def PatientCurrentAppointment(request):
     patient = Patient.objects.get(user=request.user)
-    appointments = Appointment.objects.filter(patient=patient, status="Approved").order_by('datetime')
+    appointments = Appointment.objects.filter(patient=patient).filter(Q(status="Approved") |  Q(status="Confirm Appearance")).order_by('datetime')
     # for appoinment in appointments:
     #     if appoinment.procedures:
     #         print(appoinment.procedures)

@@ -9,6 +9,7 @@ class AppointmentForm(ModelForm):
     class Meta:
         model = Appointment
         fields = '__all__'
+        exclude = ['staff_name', 'specialization']
 
 class AppointmentFormPatient(ModelForm):
     class Meta:
