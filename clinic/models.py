@@ -117,6 +117,7 @@ class Appointment(models.Model):
     document_id = models.CharField(max_length=255, null=True, blank=True)
     doctor = models.CharField(max_length=255, null=True, blank=True)
     reasons = models.CharField(max_length=255,null=True, blank=True)
+    is_followup = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Appointment'

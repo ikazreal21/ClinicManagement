@@ -199,6 +199,14 @@ def ApproveAppointment(request, pk):
     appointment = Appointment.objects.get(id=pk)
     appointment.status = "Approved"
     appointment.save()
+    if appoinment.is_followup:
+        PatientNotification.objects.create(
+        patient=appointment.patient,
+        appointment_id=appointment.id,
+        title='Follow Up Appointment Approved',
+        message=f'Your Follow Up appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Approved.'
+        )
+        return redirect('appointments')
     PatientNotification.objects.create(
         patient=appointment.patient,
         appointment_id=appointment.id,
@@ -741,6 +749,7 @@ def FollowUpAppointment(request, pk):
             appointment.datetime = appointment_datetime
             appointment.status = "Pending"
             appointment.patient = patient
+            appoinment.is_followup = True
             appointment.procedures = str(selects_list)
             appointment.save()
             return redirect('doctorhome')
