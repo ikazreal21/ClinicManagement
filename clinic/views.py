@@ -749,7 +749,7 @@ def FollowUpAppointment(request, pk):
             appointment.datetime = appointment_datetime
             appointment.status = "Pending"
             appointment.patient = patient
-            appoinment.is_followup = True
+            appointment.is_followup = True
             appointment.procedures = str(selects_list)
             appointment.save()
             return redirect('doctorhome')
