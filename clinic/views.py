@@ -199,7 +199,7 @@ def ApproveAppointment(request, pk):
     appointment = Appointment.objects.get(id=pk)
     appointment.status = "Approved"
     appointment.save()
-    if appoinment.is_followup:
+    if appointment.is_followup:
         PatientNotification.objects.create(
         patient=appointment.patient,
         appointment_id=appointment.id,
