@@ -55,9 +55,6 @@
                 <i class="mdi mdi-close-box"></i>Decline
             </button>
         {% elif appointment.status == 'Approved' %}
-            <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" href="" onclick="showConfirmModal()"><i class="mdi mdi-check" >
-            </i>Confirm Appearance
-            </a>/
             {% if current_date_str %}
                 <a class="btn btn-danger btn-lg text-white mb-0 me-0" type="button" href="{% url 'noappearance' appointment.id %}"><i class="mdi mdi-close">
                 </i>No Appearance
@@ -65,6 +62,9 @@
             {% else %}
                 <h3 style="text-align: center;">Not on the date yet</h3>
             {% endif %}
+                <a class="btn btn-success btn-lg text-white mb-0 me-0" type="button" onclick="showConfirmModal()"><i class="mdi mdi-check" >
+                </i>Confirm Appearance
+                </a>/
             <button type="button" class="btn btn-danger btn-lg text-white mb-0 me-0" onclick="showCancelModal()">
                 <i class="mdi mdi-close-box"></i>Cancel
             </button>
