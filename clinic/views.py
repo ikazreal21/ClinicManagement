@@ -19,6 +19,8 @@ from datetime import date, datetime, time, timedelta
 from django.utils.dateparse import parse_date
 # from pytz import timezone
 
+from django.utils.timezone import now
+
 from django.http import JsonResponse
 
 import requests 
@@ -60,8 +62,28 @@ DOCTOR_SCHEDULES = {
     },
 }
 
+def update_appointment_status():
+    """
+    Update the status of appointments:
+    If the status is 'Pending' and the appointment date (datetime) has passed,
+    update the status to 'No Appearance'.
+    """
+    # Get current datetime
+    current_time = now()
+
+    # Filter appointments with 'Pending' status and datetime in the past
+    pending_appointments = Appointment.objects.filter(status='Pending', datetime__lt=current_time)
+
+    # Update the status of the filtered appointments
+    for appointment in pending_appointments:
+        appointment.status = 'No Appearance'
+        appointment.save()
+
+    return f"Updated {pending_appointments.count()} appointments to 'No Appearance'."
+
 @login_required(login_url='login')
 def Home(request):
+    print(update_appointment_status())
     if request.user.is_authenticated:
         if request.user.is_patient:
             return redirect('patientdashboard')
@@ -199,7 +221,7 @@ def ApproveAppointment(request, pk):
     appointment = Appointment.objects.get(id=pk)
     appointment.status = "Approved"
     appointment.save()
-    if appoinment.is_followup:
+    if appointment.is_followup:
         PatientNotification.objects.create(
         patient=appointment.patient,
         appointment_id=appointment.id,
@@ -749,7 +771,7 @@ def FollowUpAppointment(request, pk):
             appointment.datetime = appointment_datetime
             appointment.status = "Pending"
             appointment.patient = patient
-            appoinment.is_followup = True
+            appointment.is_followup = True
             appointment.procedures = str(selects_list)
             appointment.save()
             return redirect('doctorhome')
