@@ -66,17 +66,7 @@
     </nav>
     <!-- Navbar End -->
 
-
-    <!-- Header Start -->
-    <!-- <div class="container-fluid header bg-primary p-0 mb-5">
-        <div class="row g-0 align-items-center flex-column-reverse flex-lg-row">
-            <div class="col-lg-6 p-5 wow fadeIn" data-wow-delay="0.1s">
-                <h1 class="display-4 text-white mb-5">Good Health Is The Root Of All Heppiness</h1>
-            </div>
-        </div>
-    </div> -->
-    <!-- Header End -->
-
+    <!-- Service Section Start -->
     <div class="container-xxl py-5">
         <div class="container">
             <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
@@ -91,7 +81,15 @@
                             <i class="fa fa-heartbeat text-primary fs-4"></i>
                         </div>
                         <h4 class="mb-3">{{ i.name | title }}</h4>
-                        <p class="service-description mb-4" style="display: none;">{{ i.description }}</p>
+                        
+                        <!-- Show a short snippet of the description initially -->
+                        <p class="full-description">
+                            {{ i.description|truncatewords:20 }}
+                        </p>
+                        
+                        <!-- Hidden full description -->
+                        <p class="full-description" style="display: none;">{{ i.description }}</p>
+                        
                         <button class="btn read-more-btn" onclick="toggleDescription(this)">
                             <i class="fa fa-plus text-primary me-3"></i>Read More
                         </button>
@@ -101,20 +99,24 @@
             </div>
         </div>
     </div>
-    
+    <!-- Service Section End -->
+
     <script>
         function toggleDescription(button) {
-            const description = button.previousElementSibling;
-            if (description.style.display === "none") {
-                description.style.display = "block";
+            const fullDescription = button.previousElementSibling.previousElementSibling; // This selects the full description
+            const shortDescription = button.previousElementSibling; // This selects the short description
+            
+            if (fullDescription.style.display === "none") {
+                fullDescription.style.display = "block";
+                shortDescription.style.display = "none";  // Hide short description
                 button.innerHTML = '<i class="fa fa-minus text-primary me-3"></i>Read Less';
             } else {
-                description.style.display = "none";
+                fullDescription.style.display = "none";
+                shortDescription.style.display = "block"; // Show short description
                 button.innerHTML = '<i class="fa fa-plus text-primary me-3"></i>Read More';
             }
         }
     </script>
-    
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -153,14 +155,13 @@
     </div>
     <!-- Footer End -->
 
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="{% static 'lib/wow/wow.min.js' %}"></script>
     <script src="{% static 'lib/easing/easing.min.js' %}"></script>
     <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
