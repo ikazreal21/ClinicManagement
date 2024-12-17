@@ -279,7 +279,7 @@ def CompleteAppointment(request, pk):
         patient=appointment.patient,
         appointment_id=appointment.id,
         title='Appointment Completed',
-        message=f'Your appointment on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Completed.'
+        message=f'Your appointment for your requested procedure on {appointment.datetime.strftime("%b %e %Y %I:%M %p")} has been Completed.'
     )
     return redirect('appointments')
 
@@ -960,7 +960,7 @@ def send_verification_email(email, user, verification_code):
     send_email(subject, message, [email])
 
 def Landing(request):
-    services = Procedures.objects.all()[0:3]
+    services = Procedures.objects.filter(category='staff')[0:3]
     context = {'services': services}
     print(services)
     return render(request, 'clinic/landing.html', context)
@@ -969,7 +969,7 @@ def About(request):
     return render(request, 'clinic/about.html')
 
 def ServicesLanding(request):
-    services = Procedures.objects.order_by('?')[:9]
+    services = Procedures.objects.filter(category='staff')
     context = {'services': services}
     print(services)
     return render(request, 'clinic/services.html', context)

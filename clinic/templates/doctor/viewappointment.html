@@ -6,11 +6,7 @@
     <div class="col-lg-12">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                {% if profile %}
-                <h3 class="card-title card-title-dash">{{profile.first_name}} {{profile.last_name}}</h3>
-                {% else %}
-                <h3 class="card-title card-title-dash">No Account - {{appointment.patient_name}}</h3>
-                {% endif %}
+                <h3 class="card-title card-title-dash">{{appointment.patient_name}}</h3>
             </div>
             <div>
                 <a class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" href="{% url 'doctors_appointments' %}">

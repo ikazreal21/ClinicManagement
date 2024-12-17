@@ -4,3 +4,4 @@ clinic/migrations/
 ClinicManagement/__pycache__/
 db.sqlite3
 42 klinik-1.0.0
+staticfiles

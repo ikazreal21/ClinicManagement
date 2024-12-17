@@ -43,7 +43,7 @@ class UserAdminConfig(UserAdmin):
 
 
 admin.site.unregister(Group)
-# admin.site.unregister(Theme)  
+admin.site.unregister(Theme)  
 admin.site.register(CustomUser, UserAdminConfig)
 admin.site.register(Patient)
 admin.site.register(PatientMedicalHistory)
